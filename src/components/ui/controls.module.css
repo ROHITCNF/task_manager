@@ -107,14 +107,14 @@
 
 .select {
   width: 100%;
-  padding-right: var(--space-8);
+  padding-right: var(--space-6);
   appearance: none;
   cursor: pointer;
 }
 
 .chevron {
   position: absolute;
-  right: var(--space-2);
+  right: var(--space-1-5);
   color: var(--color-text-primary);
   pointer-events: none;
 }
@@ -131,17 +131,23 @@
 
 .segment {
   display: inline-flex;
-  flex: 1;
+  flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-1-5);
+  gap: var(--space-1-5);
+  min-width: 0;
+  padding: var(--space-1) 0;
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
   cursor: pointer;
+}
+
+.segment svg {
+  font-size: var(--font-size-sm);
 }
 
 .segmentChecked {

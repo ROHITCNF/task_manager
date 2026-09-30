@@ -1,25 +1,116 @@
 {
   "$description": "Component and layout dimensions (CSS px), measured from the screenshots. Viewport in the references: about 1720x950 CSS px at DPR 2 (login: 1908x948 at DPR 1). All values are estimated.",
   "size": {
-    "sidebar-width":        { "value": "218px",  "seen": "including its 1px right border" },
-    "content-max-wide":     { "value": "1072px", "seen": "Home column, centred in main" },
-    "content-max-narrow":   { "value": "624px",  "seen": "Quick Capture and Settings column, centred in main" },
-    "toolbar-height":       { "value": "61px",   "seen": "Tasks header including its bottom border" },
-    "board-column-width":   { "value": "288px" },
-    "control-height-sm":    { "value": "28px",   "seen": "Tasks search input and selects" },
-    "control-height":       { "value": "34px",   "seen": "buttons, Settings inputs, nav items" },
-    "pill-height":          { "value": "22px" },
-    "avatar-sm":            { "value": "20px",   "seen": "task card assignees" },
-    "avatar-md":            { "value": "28px",   "seen": "settings member list" },
-    "dot-sm":               { "value": "6px",    "seen": "pill dots, calendar entries" },
-    "dot-md":               { "value": "10px",   "seen": "client list dots" },
-    "client-row-height":    { "value": "44px" },
-    "stat-card-height":     { "value": "119px" },
-    "bar-height":           { "value": "12px" },
-    "textarea-height":      { "value": "206px",  "seen": "Quick Capture" },
-    "login-card-width":     { "value": "384px" },
-    "calendar-panel-width": { "value": "250px",  "estimated": true, "seen": "No due date panel" },
-    "border-width":         { "value": "1px" },
-    "nav-indicator-width":  { "value": "2px",    "seen": "active nav left bar" }
+    "sidebar-width": {
+      "value": "218px",
+      "seen": "including its 1px right border"
+    },
+    "content-max-wide": {
+      "value": "1072px",
+      "seen": "Home column, centred in main"
+    },
+    "content-max-narrow": {
+      "value": "624px",
+      "seen": "Quick Capture and Settings column, centred in main"
+    },
+    "toolbar-height": {
+      "value": "61px",
+      "seen": "Tasks header including its bottom border"
+    },
+    "board-column-width": {
+      "value": "288px"
+    },
+    "board-search-width": {
+      "value": "219px",
+      "seen": "Tasks search input"
+    },
+    "board-filter-assignee-width": {
+      "value": "223px",
+      "seen": "'Everyone' select"
+    },
+    "board-filter-label-width": {
+      "value": "96px",
+      "seen": "'All labels' select"
+    },
+    "board-filter-client-width": {
+      "value": "259px",
+      "seen": "'All clients' select"
+    },
+    "control-height-sm": {
+      "value": "28px",
+      "seen": "Tasks search input and selects"
+    },
+    "control-height": {
+      "value": "34px",
+      "seen": "buttons, Settings inputs, nav items"
+    },
+    "control-height-lg": {
+      "value": "36px",
+      "seen": "login 'Continue with Google' button"
+    },
+    "toolbar-button-height": {
+      "value": "33px",
+      "seen": "Tasks '+ New task' button"
+    },
+    "toolbar-select-height": {
+      "value": "30px",
+      "seen": "Tasks filter selects"
+    },
+    "pill-height": {
+      "value": "21px",
+      "seen": "priority and client pills on task cards"
+    },
+    "avatar-sm": {
+      "value": "20px",
+      "seen": "task card assignees"
+    },
+    "avatar-md": {
+      "value": "28px",
+      "seen": "settings member list"
+    },
+    "dot-sm": {
+      "value": "6px",
+      "seen": "pill dots, calendar entries"
+    },
+    "dot-md": {
+      "value": "10px",
+      "seen": "client list dots, sidebar workspace dot"
+    },
+    "client-row-height": {
+      "value": "44px"
+    },
+    "stat-card-height": {
+      "value": "119px"
+    },
+    "bar-height": {
+      "value": "12px"
+    },
+    "chart-label-width": {
+      "value": "161px",
+      "seen": "Home bar charts: label column (label start to bar start)"
+    },
+    "textarea-height": {
+      "value": "206px",
+      "seen": "Quick Capture"
+    },
+    "login-card-width": {
+      "value": "384px"
+    },
+    "calendar-panel-width": {
+      "value": "250px",
+      "estimated": true,
+      "seen": "No due date panel"
+    },
+    "border-width": {
+      "value": "1px"
+    },
+    "nav-indicator-width": {
+      "value": "2px",
+      "seen": "active nav left bar"
+    },
+    "nav-item-width": {
+      "value": "191px",
+      "seen": "sidebar nav items and theme toggle"
+    }
   }
 }

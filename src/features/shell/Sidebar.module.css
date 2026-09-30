@@ -1,0 +1,95 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-3) var(--space-4) var(--space-3-5) var(--space-2-5);
+}
+
+/* ── Workspace header ── */
+.header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-1-5);
+}
+
+.workspaceDot {
+  width: var(--size-dot-md);
+  height: var(--size-dot-md);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.workspaceName {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  cursor: pointer;
+}
+
+.chevron {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.email {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.signOut {
+  align-self: start;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-tight);
+}
+
+/* ── Nav ── */
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: calc(var(--space-5) + var(--space-0-5));
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  width: var(--size-nav-item-width);
+  height: var(--size-control-height);
+  padding: 0 var(--space-3);
+  border-left: var(--size-nav-indicator-width) solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+  text-decoration: none;
+}
+
+.navItemActive {
+  border-left-color: var(--color-text-accent);
+  background: var(--color-bg-accent-subtle);
+  color: var(--color-text-accent);
+}
+
+/* ── Theme toggle ── */
+.theme {
+  width: var(--size-nav-item-width);
+  margin-top: auto;
+}

@@ -1,27 +1,79 @@
 {
   "$description": "Typography tokens. The font family was confirmed by the project owner (Geist, 2026-09-30) and is self-hosted via @fontsource-variable/geist. Sizes were inferred from glyph heights measured on the 2x screenshots (CSS px = image px / 2) and are still estimated.",
   "font-family": {
-    "sans": { "value": "'Geist Variable', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" }
+    "sans": {
+      "value": "'Geist Variable', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    }
   },
   "font-size": {
-    "xs":   { "value": "12px", "estimated": true, "seen": "stat labels/captions, meta row, author line, email, bar labels, role, footer note" },
-    "sm":   { "value": "13px", "estimated": true, "seen": "login subtitle, calendar entries" },
-    "base": { "value": "14px", "estimated": true, "seen": "nav items, body text, inputs, buttons, column titles, card titles, subtitles" },
-    "md":   { "value": "15px", "estimated": true, "seen": "panel titles, workspace name, client names" },
-    "lg":   { "value": "18px", "estimated": true, "seen": "page titles, greeting, login title" },
-    "2xl":  { "value": "28px", "estimated": true, "seen": "stat numbers" }
+    "xs": {
+      "value": "12px",
+      "estimated": true,
+      "seen": "stat labels/captions, meta row, author line, email, bar labels, role, footer note"
+    },
+    "sm": {
+      "value": "13px",
+      "estimated": true,
+      "seen": "calendar entries"
+    },
+    "base": {
+      "value": "14px",
+      "estimated": true,
+      "seen": "nav items, body text, inputs, buttons, column titles, card titles, subtitles, login subtitle"
+    },
+    "md": {
+      "value": "15px",
+      "estimated": true,
+      "seen": "panel titles, workspace name, client names"
+    },
+    "lg": {
+      "value": "18px",
+      "estimated": true,
+      "seen": "page titles, greeting"
+    },
+    "xl": {
+      "value": "20px",
+      "seen": "login title (measured on login_light.png at DPR 1)"
+    },
+    "2xl": {
+      "value": "28px",
+      "estimated": true,
+      "seen": "stat numbers"
+    }
   },
   "font-weight": {
-    "regular":  { "value": 400 },
-    "medium":   { "value": 500 },
-    "semibold": { "value": 600 },
-    "bold":     { "value": 700 }
+    "regular": {
+      "value": 400
+    },
+    "medium": {
+      "value": 500
+    },
+    "semibold": {
+      "value": 600
+    },
+    "bold": {
+      "value": 700
+    }
   },
   "line-height": {
-    "tight":  { "value": 1.2,  "estimated": true },
-    "normal": { "value": 1.45, "estimated": true }
+    "tight": {
+      "value": 1.2,
+      "estimated": true
+    },
+    "snug": {
+      "value": 1.3,
+      "seen": "Home stat captions (2-line wrap pitch)"
+    },
+    "normal": {
+      "value": 1.45,
+      "estimated": true
+    }
   },
   "letter-spacing": {
-    "caps": { "value": "0.02em", "estimated": true, "seen": "OWNER / MEMBER role labels" }
+    "caps": {
+      "value": "0.02em",
+      "estimated": true,
+      "seen": "OWNER / MEMBER role labels"
+    }
   }
 }

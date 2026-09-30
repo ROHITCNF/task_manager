@@ -1,0 +1,86 @@
+/* ── Stat card ── */
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.statValue {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.statCaption {
+  margin-top: var(--space-1);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-snug);
+}
+
+/* ── Panels ── */
+.panelTitle {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.panelEmpty {
+  margin-top: var(--space-2-5);
+}
+
+/* ── Bar chart ── */
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3-5);
+  margin-top: var(--space-4);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--size-chart-label-width) minmax(0, 1fr);
+  align-items: center;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}
+
+.rowLabel {
+  overflow: hidden;
+  padding-right: var(--space-3);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.bar {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.count {
+  flex: none;
+  margin-left: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.footer {
+  margin-top: var(--space-3-5);
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+}

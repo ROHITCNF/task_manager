@@ -33,7 +33,13 @@ export function fakeServices() {
       listMine: vi.fn(async () => [{ id: WS, name: 'DMT', role: 'MEMBER' }, { id: 'wsp_2', name: 'Other', role: 'OWNER' }]),
       create: vi.fn(async (name) => ({ id: 'wsp_new', name, role: 'OWNER' })),
       join: vi.fn(async () => ({ id: 'wsp_join', name: 'Joined', role: 'MEMBER' })),
-      listMembers: vi.fn(async () => ({ items: [{ user: user('u1', 'N'), role: 'OWNER' }], nextCursor: null })),
+      listMembers: vi.fn(async () => ({
+        items: [
+          { user: user('u1', 'Neeraj Bhattathiripad'), email: 'n@x', role: 'OWNER' },
+          { user: { ...user('u2', 'Anantha Krishnan T G'), avatarUrl: '/a.png' }, email: 'a@x', role: 'MEMBER' },
+        ],
+        nextCursor: null,
+      })),
     },
     tasks: {
       stats: vi.fn(async (_ws, groupBy) => (groupBy === 'status'
@@ -52,6 +58,9 @@ export function fakeServices() {
         { id: 'e', title: 'E', status: 'todo', priority: 'none', dueDate: '2026-09-30' },
       ]),
       listWithoutDueDate: vi.fn(async () => [{ id: 'n', title: 'No due', status: 'backlog', priority: 'high', dueDate: null }]),
+    },
+    labels: {
+      list: vi.fn(async () => [{ id: 'l1', name: 'Firmware', colour: '#418faf' }]),
     },
     dashboard: {
       get: vi.fn(async () => ({ today: '2026-09-30', stats: { myOpenTasks: 0, overdue: 0, dueThisWeek: 0, awaitingReview: 0, unreadInbox: 0 }, dueSoon: [], awaitingReview: [] })),

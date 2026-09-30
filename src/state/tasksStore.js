@@ -22,15 +22,15 @@ const indexById = (tasks) => Object.fromEntries(tasks.map((t) => [t.id, t]));
 
 /**
  * Board state (docs/lld/state.md §2 tasksStore).
- * @param {{ tasks: import('../data/services/TaskService.js').TaskService }} services
+ * @param {{ tasks: import('../data/services/TaskService.js').TaskService, labels?: import('../data/services/index.js').LabelService }} services
  * @param {{ getWorkspaceId: () => string|null, onUnauthenticated?: () => void }} deps
  */
-export function createTasksStore({ tasks }, deps) {
+export function createTasksStore({ tasks, labels }, deps) {
   const tracker = createRequestTracker();
   /** Bumped whenever the board is (re)loaded or reset; "load more" results from an older board are dropped. */
   let generation = 0;
 
-  const initial = () => ({ filters: initialFilters(), counts: zeroCounts(), columns: emptyColumns(), byId: {}, countsReq: IDLE });
+  const initial = () => ({ filters: initialFilters(), counts: zeroCounts(), columns: emptyColumns(), byId: {}, countsReq: IDLE, labels: [] });
 
   return createStore((set, get) => ({
     ...initial(),
@@ -101,6 +101,19 @@ export function createTasksStore({ tasks }, deps) {
     setFilter(key, value) {
       set((s) => ({ filters: { ...s.filters, [key]: value ?? (key === 'q' ? '' : null) } }));
       return get().loadBoard();
+    },
+
+    /** Workspace labels for the "All labels" filter (US-05). */
+    async loadLabels() {
+      const wsId = deps.getWorkspaceId();
+      if (!wsId || !labels) return;
+      const isCurrent = tracker.start('labels');
+      try {
+        const list = await labels.list(wsId);
+        if (isCurrent()) set({ labels: list });
+      } catch (error) {
+        toFailure(error, deps);
+      }
     },
 
     reset() {

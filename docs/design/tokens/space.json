@@ -1,17 +1,54 @@
 {
   "$description": "Spacing scale (CSS px), measured from the 2x screenshots. Values are estimated.",
   "space": {
-    "0":   { "value": "0" },
-    "0-5": { "value": "2px" },
-    "1":   { "value": "4px" },
-    "1-5": { "value": "6px" },
-    "2":   { "value": "8px",  "seen": "board card gap, column inner padding, client row gap" },
-    "2-5": { "value": "10px", "seen": "sidebar padding" },
-    "3":   { "value": "12px", "seen": "stat card gap, task card padding, nav item padding-x" },
-    "4":   { "value": "16px", "seen": "stat card padding, panel gap, board column gap, client row padding-x" },
-    "5":   { "value": "20px", "seen": "panel padding" },
-    "6":   { "value": "24px", "seen": "home section gap" },
-    "6-5": { "value": "26px", "estimated": true, "seen": "page padding-x (main edge to content on Tasks/Clients/Calendar)" },
-    "8":   { "value": "32px", "seen": "login card padding" }
+    "0": {
+      "value": "0"
+    },
+    "0-5": {
+      "value": "2px"
+    },
+    "1": {
+      "value": "4px"
+    },
+    "1-5": {
+      "value": "6px"
+    },
+    "2": {
+      "value": "8px",
+      "seen": "board card gap, column inner padding, client row gap"
+    },
+    "2-5": {
+      "value": "10px",
+      "seen": "sidebar padding"
+    },
+    "3": {
+      "value": "12px",
+      "seen": "stat card gap, task card padding, nav item padding-x"
+    },
+    "3-5": {
+      "value": "14px",
+      "seen": "sidebar bottom padding (theme toggle to viewport edge)"
+    },
+    "4": {
+      "value": "16px",
+      "seen": "stat card padding, panel gap, board column gap, client row padding-x"
+    },
+    "5": {
+      "value": "20px",
+      "seen": "panel padding"
+    },
+    "6": {
+      "value": "24px",
+      "seen": "home section gap"
+    },
+    "6-5": {
+      "value": "26px",
+      "estimated": true,
+      "seen": "page padding-x (main edge to content on Tasks/Clients/Calendar)"
+    },
+    "8": {
+      "value": "32px",
+      "seen": "login card padding"
+    }
   }
 }

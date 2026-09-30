@@ -1,0 +1,62 @@
+.board {
+  flex: 1;
+  min-height: 0;
+}
+
+.columns {
+  display: flex;
+  gap: var(--space-4);
+  width: max-content;
+  height: 100%;
+  padding: var(--space-6-5) var(--space-6-5) calc(var(--space-6-5) + var(--space-1));
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  width: var(--size-board-column-width);
+  min-height: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-subtle);
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3) var(--space-1-5);
+}
+
+.columnTitle {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.columnCount {
+  color: var(--color-text-subtle);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-tight);
+}
+
+.list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2-5);
+  padding: 0 var(--space-2);
+}
+
+.sentinel {
+  flex: none;
+  height: var(--size-border-width);
+}
+
+.columnFooter {
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+
+.addTask {
+  font-size: var(--font-size-base);
+}
