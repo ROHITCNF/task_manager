@@ -1,0 +1,1328 @@
+openapi: 3.1.0
+info:
+  title: DMT Task Management API
+  version: 1.0.0-draft
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+  summary: Contract between the task management UI and its backend.
+  description: |
+    Source of truth for the backend implementation and the frontend MSW mocks.
+    The readable guide is docs/lld/api/api-contract.md, and the conventions are recorded in ADR-0011.
+
+    Conventions:
+    - JSON bodies with camelCase keys. Date-only fields use `YYYY-MM-DD`; instants use ISO 8601 UTC.
+    - Single resources come back as `{ "data": {...} }`. Lists come back as `{ "data": [...], "meta": { nextCursor, limit } }`.
+    - Pagination is cursor-based (`limit`, `cursor`). There is no offset paging.
+    - Errors are RFC 9457 `application/problem+json`.
+    - Mutable resources carry `version`. PATCH and DELETE require `If-Match`, and a stale version returns 412.
+    - POST accepts `Idempotency-Key`.
+    - Workspace data lives under `/workspaces/{workspaceId}`.
+servers:
+  - url: /api/v1
+    description: Same-origin (proxied in development, mocked by MSW in mock mode)
+
+security:
+  - sessionCookie: []
+
+tags:
+  - name: Auth
+  - name: Me
+  - name: Workspaces
+  - name: Members
+  - name: Tasks
+  - name: Dashboard
+  - name: Clients
+  - name: Labels
+  - name: QuickCapture
+  - name: Inbox
+  - name: Docs
+  - name: ChangeRequests
+
+paths:
+  # ───────────────────────────── Auth ─────────────────────────────
+  /auth/session:
+    get:
+      tags: [Auth]
+      operationId: getSession
+      summary: Current session (who is signed in)
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Session" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logout
+      summary: End the session (clears the cookie)
+      responses:
+        "204": { description: Signed out }
+
+  /auth/google/start:
+    get:
+      tags: [Auth]
+      operationId: googleStart
+      summary: "(Future) Begin Google OAuth — full-page redirect, not called via fetch"
+      security: []
+      parameters:
+        - name: returnTo
+          in: query
+          schema: { type: string, example: "/tasks" }
+      responses:
+        "302": { description: Redirect to Google consent screen }
+
+  /auth/google/callback:
+    get:
+      tags: [Auth]
+      operationId: googleCallback
+      summary: "(Future) OAuth callback — sets session cookie and redirects to returnTo"
+      security: []
+      responses:
+        "302": { description: Redirect into the app }
+
+  /auth/mock-login:
+    post:
+      tags: [Auth]
+      operationId: mockLogin
+      summary: "Mock mode only: sign in as a fixture user. MUST NOT exist in production."
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Session" }
+
+  # ───────────────────────────── Me ─────────────────────────────
+  /me:
+    get:
+      tags: [Me]
+      operationId: getMe
+      summary: Get me
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/User" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+
+  /me/workspaces:
+    get:
+      tags: [Me]
+      operationId: listMyWorkspaces
+      summary: Workspaces the current user belongs to (for the switcher)
+      responses:
+        "200":
+          description: Workspaces
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Workspace" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+
+  # ───────────────────────────── Workspaces ─────────────────────────────
+  /workspaces:
+    post:
+      tags: [Workspaces]
+      operationId: createWorkspace
+      summary: Create a workspace (the caller becomes OWNER)
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 80 }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Workspace" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /workspaces/join:
+    post:
+      tags: [Workspaces]
+      operationId: joinWorkspace
+      summary: Join a workspace with an invite code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inviteCode]
+              properties:
+                inviteCode: { type: string, minLength: 1, maxLength: 64 }
+      responses:
+        "200":
+          description: Joined
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Workspace" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /workspaces/{workspaceId}:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Workspaces]
+      operationId: getWorkspace
+      summary: Get workspace
+      responses:
+        "200":
+          description: Workspace
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Workspace" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  # ───────────────────────────── Members ─────────────────────────────
+  /workspaces/{workspaceId}/members:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Members]
+      operationId: listMembers
+      summary: Members, OWNER first then by joinedAt ascending
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Members
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Member" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /workspaces/{workspaceId}/invites:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    post:
+      tags: [Members]
+      operationId: createInvite
+      summary: "(Future UI) Create an invite code. OWNER only."
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "201":
+          description: Invite
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Invite" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  # ───────────────────────────── Tasks ─────────────────────────────
+  /workspaces/{workspaceId}/tasks:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Tasks]
+      operationId: listTasks
+      summary: List tasks with filters. The board calls this once per status column.
+      parameters:
+        - $ref: "#/components/parameters/StatusFilter"
+        - $ref: "#/components/parameters/StatusGroup"
+        - $ref: "#/components/parameters/AssigneeFilter"
+        - $ref: "#/components/parameters/Unassigned"
+        - $ref: "#/components/parameters/ClientFilter"
+        - $ref: "#/components/parameters/LabelFilter"
+        - $ref: "#/components/parameters/Search"
+        - name: dueFrom
+          in: query
+          description: Inclusive lower bound on dueDate
+          schema: { type: string, format: date }
+        - name: dueTo
+          in: query
+          description: Inclusive upper bound on dueDate
+          schema: { type: string, format: date }
+        - name: hasDueDate
+          in: query
+          schema: { type: boolean }
+        - name: view
+          in: query
+          description: Payload shape. `card` omits description; `calendar` returns TaskCalendarItem.
+          schema: { type: string, enum: [card, calendar, full], default: card }
+        - name: sort
+          in: query
+          description: Prefix with `-` for descending.
+          schema:
+            type: string
+            enum: [position, -position, createdAt, -createdAt, dueDate, -dueDate]
+            default: position
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Tasks (the item shape depends on `view`)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      oneOf:
+                        - $ref: "#/components/schemas/Task"
+                        - $ref: "#/components/schemas/TaskCalendarItem"
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+    post:
+      tags: [Tasks]
+      operationId: createTask
+      summary: Create task
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TaskCreate" }
+      responses:
+        "201":
+          description: Created
+          headers:
+            ETag: { $ref: "#/components/headers/ETag" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthenticated" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /workspaces/{workspaceId}/tasks/bulk:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    post:
+      tags: [Tasks]
+      operationId: createTasksBulk
+      summary: Create up to 100 tasks atomically (Quick Capture commit)
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tasks]
+              properties:
+                tasks:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items: { $ref: "#/components/schemas/TaskCreate" }
+      responses:
+        "201":
+          description: Created (in request order)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Task" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /workspaces/{workspaceId}/tasks/stats:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Tasks]
+      operationId: getTaskStats
+      summary: Counts grouped by status or assignee. Accepts the same filters as listTasks.
+      parameters:
+        - name: groupBy
+          in: query
+          required: true
+          schema: { type: string, enum: [status, assignee] }
+        - $ref: "#/components/parameters/StatusFilter"
+        - $ref: "#/components/parameters/StatusGroup"
+        - $ref: "#/components/parameters/AssigneeFilter"
+        - $ref: "#/components/parameters/Unassigned"
+        - $ref: "#/components/parameters/ClientFilter"
+        - $ref: "#/components/parameters/LabelFilter"
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          description: Counts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/TaskStats" }
+
+  /workspaces/{workspaceId}/tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Tasks]
+      operationId: getTask
+      summary: Get task
+      responses:
+        "200":
+          description: Task
+          headers:
+            ETag: { $ref: "#/components/headers/ETag" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Task" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [Tasks]
+      operationId: updateTask
+      summary: Partial update. Send only the changed fields.
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TaskUpdate" }
+      responses:
+        "200":
+          description: Updated
+          headers:
+            ETag: { $ref: "#/components/headers/ETag" }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Task" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "412": { $ref: "#/components/responses/PreconditionFailed" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+    delete:
+      tags: [Tasks]
+      operationId: deleteTask
+      summary: Delete task
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "204": { description: Deleted }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "412": { $ref: "#/components/responses/PreconditionFailed" }
+
+  /workspaces/{workspaceId}/tasks/{taskId}/checklist-items:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Tasks]
+      operationId: listChecklistItems
+      summary: "(Future UI) Checklist items of a task"
+      responses:
+        "200":
+          description: Items
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ChecklistItem" }
+
+  /workspaces/{workspaceId}/tasks/{taskId}/comments:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Tasks]
+      operationId: listComments
+      summary: "(Future UI) Comments, oldest first"
+      parameters:
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Comments
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Comment" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+
+  # ───────────────────────────── Dashboard ─────────────────────────────
+  /workspaces/{workspaceId}/dashboard:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Dashboard]
+      operationId: getDashboard
+      summary: Personal Home summary for the caller, computed in the caller's timezone
+      parameters:
+        - $ref: "#/components/parameters/Timezone"
+      responses:
+        "200":
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Dashboard" }
+
+  # ───────────────────────────── Clients ─────────────────────────────
+  /workspaces/{workspaceId}/clients:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Clients]
+      operationId: listClients
+      summary: Clients ordered by name (binary / case-sensitive collation, matching the reference)
+      parameters:
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Clients
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Client" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+    post:
+      tags: [Clients]
+      operationId: createClient
+      summary: Create client
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClientCreate" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Client" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  /workspaces/{workspaceId}/clients/{clientId}:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - name: clientId
+        in: path
+        required: true
+        schema: { $ref: "#/components/schemas/ClientId" }
+    patch:
+      tags: [Clients]
+      operationId: updateClient
+      summary: Update client
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClientUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Client" }
+        "412": { $ref: "#/components/responses/PreconditionFailed" }
+    delete:
+      tags: [Clients]
+      operationId: deleteClient
+      summary: Delete client
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "204": { description: Deleted }
+        "412": { $ref: "#/components/responses/PreconditionFailed" }
+
+  # ───────────────────────────── Labels ─────────────────────────────
+  /workspaces/{workspaceId}/labels:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Labels]
+      operationId: listLabels
+      summary: List labels
+      responses:
+        "200":
+          description: Labels
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Label" }
+    post:
+      tags: [Labels]
+      operationId: createLabel
+      summary: Create label
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 40 }
+                colour: { $ref: "#/components/schemas/HexColour" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Label" }
+
+  # ───────────────────────────── Quick Capture ─────────────────────────────
+  /workspaces/{workspaceId}/quick-capture/split:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    post:
+      tags: [QuickCapture]
+      operationId: splitQuickCapture
+      summary: Split free text into draft tasks. Nothing is persisted; commit the drafts with tasks/bulk.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, source]
+              properties:
+                text: { type: string, minLength: 1, maxLength: 20000 }
+                source: { $ref: "#/components/schemas/CaptureSource" }
+      responses:
+        "200":
+          description: Drafts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [drafts]
+                    properties:
+                      drafts:
+                        type: array
+                        items: { $ref: "#/components/schemas/TaskDraft" }
+        "422": { $ref: "#/components/responses/ValidationFailed" }
+
+  # ───────────────────────────── Inbox (future UI) ─────────────────────────────
+  /workspaces/{workspaceId}/inbox:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Inbox]
+      operationId: listInbox
+      summary: "(Future UI) Notifications for the caller, newest first"
+      parameters:
+        - name: unread
+          in: query
+          schema: { type: boolean }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Inbox items
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/InboxItem" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+
+  /workspaces/{workspaceId}/inbox/{itemId}/read:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - name: itemId
+        in: path
+        required: true
+        schema: { type: string, pattern: "^inb_[0-9A-HJKMNP-TV-Z]{26}$" }
+    post:
+      tags: [Inbox]
+      operationId: markInboxItemRead
+      summary: Mark inbox item read
+      responses:
+        "204": { description: Marked read }
+
+  /workspaces/{workspaceId}/inbox/read-all:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    post:
+      tags: [Inbox]
+      operationId: markAllInboxRead
+      summary: Mark all inbox read
+      responses:
+        "204": { description: All marked read }
+
+  # ───────────────────────────── Docs (future UI) ─────────────────────────────
+  /workspaces/{workspaceId}/docs:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [Docs]
+      operationId: listDocs
+      summary: "(Future UI) Documents, optionally filtered by client"
+      parameters:
+        - $ref: "#/components/parameters/ClientFilter"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Docs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Doc" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+
+  # ───────────────────────────── Change requests (future UI, provisional) ─────────────────────────────
+  /workspaces/{workspaceId}/change-requests:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    get:
+      tags: [ChangeRequests]
+      operationId: listChangeRequests
+      summary: "(Future UI, PROVISIONAL shape — gap R1) Change requests"
+      parameters:
+        - name: reviewer
+          in: query
+          schema: { type: string, description: "User id or `me`" }
+        - name: status
+          in: query
+          schema: { type: string, enum: [open, approved, rejected] }
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Cursor"
+      responses:
+        "200":
+          description: Change requests
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ChangeRequest" }
+                  meta: { $ref: "#/components/schemas/CursorMeta" }
+
+# ═══════════════════════════════ Components ═══════════════════════════════
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: dmt_session
+      description: HttpOnly, Secure, SameSite=Lax session cookie set by the backend (ADR-0012).
+
+  headers:
+    ETag:
+      description: Quoted resource version, e.g. `"7"`. Send it back in If-Match.
+      schema: { type: string, example: "\"7\"" }
+
+  parameters:
+    WorkspaceId:
+      name: workspaceId
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/WorkspaceId" }
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { $ref: "#/components/schemas/TaskId" }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+    Cursor:
+      name: cursor
+      in: query
+      description: Opaque value taken from `meta.nextCursor`
+      schema: { type: string }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: Client-generated UUID. A replay within 24h returns the original response.
+      schema: { type: string, format: uuid }
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag / version from the last read
+      schema: { type: string, example: "\"7\"" }
+    Timezone:
+      name: tz
+      in: query
+      required: true
+      description: IANA timezone of the caller, used for "today", overdue, and due-this-week
+      schema: { type: string, example: Asia/Kolkata }
+    StatusFilter:
+      name: status
+      in: query
+      description: Comma-separated list
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: { $ref: "#/components/schemas/TaskStatus" }
+    StatusGroup:
+      name: statusGroup
+      in: query
+      description: "`open` = not done or canceled; `closed` = done or canceled"
+      schema: { type: string, enum: [open, closed] }
+    AssigneeFilter:
+      name: assigneeId
+      in: query
+      description: Comma-separated user ids. `me` is accepted as an alias for the caller.
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: { type: string }
+    Unassigned:
+      name: unassigned
+      in: query
+      description: Only tasks with no assignees
+      schema: { type: boolean }
+    ClientFilter:
+      name: clientId
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: { $ref: "#/components/schemas/ClientId" }
+    LabelFilter:
+      name: labelId
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        items: { $ref: "#/components/schemas/LabelId" }
+    Search:
+      name: q
+      in: query
+      description: Case-insensitive substring match on title (tasks) or name (clients)
+      schema: { type: string, maxLength: 200 }
+
+  responses:
+    Unauthenticated:
+      description: No valid session
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    Forbidden:
+      description: Signed in but not allowed (e.g. not a member of the workspace, or not OWNER)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    NotFound:
+      description: Resource not found (or invite code invalid)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    Conflict:
+      description: Conflicts with existing state (e.g. already a member, duplicate client name)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    PreconditionFailed:
+      description: If-Match does not match the current version
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    PreconditionRequired:
+      description: If-Match header missing
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    ValidationFailed:
+      description: Invalid input. See `errors[]`.
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+
+  schemas:
+    # ── primitives ──
+    Ulid26:
+      type: string
+      pattern: "^[0-9A-HJKMNP-TV-Z]{26}$"
+    UserId:      { type: string, pattern: "^usr_[0-9A-HJKMNP-TV-Z]{26}$" }
+    WorkspaceId: { type: string, pattern: "^wsp_[0-9A-HJKMNP-TV-Z]{26}$" }
+    TaskId:      { type: string, pattern: "^tsk_[0-9A-HJKMNP-TV-Z]{26}$" }
+    ClientId:    { type: string, pattern: "^cli_[0-9A-HJKMNP-TV-Z]{26}$" }
+    LabelId:     { type: string, pattern: "^lbl_[0-9A-HJKMNP-TV-Z]{26}$" }
+    HexColour:
+      type: string
+      pattern: "^#[0-9a-f]{6}$"
+      example: "#ca3a32"
+    Instant:
+      type: string
+      format: date-time
+      description: ISO 8601 UTC, e.g. 2026-09-23T09:15:00Z
+    LocalDate:
+      type: string
+      format: date
+      description: Calendar date without time or zone, e.g. 2026-09-29
+
+    TaskStatus:
+      type: string
+      enum: [backlog, todo, in_progress, testing_validation, done, canceled]
+      description: Board order is the enum order.
+    Priority:
+      type: string
+      enum: [urgent, high, medium, low, none]
+    Role:
+      type: string
+      enum: [OWNER, MEMBER]
+    CaptureSource:
+      type: string
+      enum: [meeting, list]
+      description: Provisional (gap Q1). Only "From a meeting" is visible in the reference.
+
+    # ── envelope pieces ──
+    CursorMeta:
+      type: object
+      required: [nextCursor, limit]
+      properties:
+        nextCursor:
+          type: [string, "null"]
+          description: null when there are no more pages
+        limit: { type: integer }
+
+    Problem:
+      type: object
+      description: RFC 9457 problem details
+      required: [type, title, status, code]
+      properties:
+        type:   { type: string, format: uri, example: "https://api.dmt.example/problems/validation_failed" }
+        title:  { type: string, example: "Validation failed" }
+        status: { type: integer, example: 422 }
+        detail: { type: string }
+        code:
+          type: string
+          enum: [unauthenticated, forbidden, not_found, invalid_invite, already_member, validation_failed, conflict, precondition_failed, precondition_required, rate_limited, internal]
+        requestId: { type: string, description: For support and log correlation }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, code, message]
+            properties:
+              field:   { type: string, example: name }
+              code:    { type: string, example: required }
+              message: { type: string, example: Name is required }
+
+    # ── users & workspaces ──
+    UserRef:
+      type: object
+      description: Compact user embedded in other resources
+      required: [id, name, avatarUrl]
+      properties:
+        id: { $ref: "#/components/schemas/UserId" }
+        name: { type: string }
+        avatarUrl: { type: [string, "null"], format: uri-reference, description: "Absolute URL or same-origin path" }
+    User:
+      allOf:
+        - $ref: "#/components/schemas/UserRef"
+        - type: object
+          required: [email]
+          properties:
+            email: { type: string, format: email }
+    Session:
+      type: object
+      required: [user]
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        expiresAt: { $ref: "#/components/schemas/Instant" }
+    Workspace:
+      type: object
+      required: [id, name, role, createdAt]
+      properties:
+        id: { $ref: "#/components/schemas/WorkspaceId" }
+        name: { type: string }
+        role: { $ref: "#/components/schemas/Role", description: The caller's role in this workspace }
+        createdAt: { $ref: "#/components/schemas/Instant" }
+    Member:
+      type: object
+      required: [user, email, role, joinedAt]
+      properties:
+        user: { $ref: "#/components/schemas/UserRef" }
+        email: { type: string, format: email }
+        role: { $ref: "#/components/schemas/Role" }
+        joinedAt: { $ref: "#/components/schemas/Instant" }
+    Invite:
+      type: object
+      required: [code, expiresAt]
+      properties:
+        code: { type: string }
+        expiresAt: { $ref: "#/components/schemas/Instant" }
+
+    # ── clients & labels ──
+    ClientRef:
+      type: object
+      required: [id, name, colour]
+      properties:
+        id: { $ref: "#/components/schemas/ClientId" }
+        name: { type: string }
+        colour: { $ref: "#/components/schemas/HexColour" }
+    Client:
+      allOf:
+        - $ref: "#/components/schemas/ClientRef"
+        - type: object
+          required: [taskCount, docCount, version, createdAt]
+          properties:
+            taskCount: { type: integer, minimum: 0 }
+            docCount: { type: integer, minimum: 0 }
+            version: { type: integer }
+            createdAt: { $ref: "#/components/schemas/Instant" }
+    ClientCreate:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        colour: { $ref: "#/components/schemas/HexColour", description: "Server assigns one from its palette if omitted" }
+    ClientUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        colour: { $ref: "#/components/schemas/HexColour" }
+    LabelRef:
+      type: object
+      required: [id, name, colour]
+      properties:
+        id: { $ref: "#/components/schemas/LabelId" }
+        name: { type: string }
+        colour: { $ref: "#/components/schemas/HexColour" }
+    Label:
+      $ref: "#/components/schemas/LabelRef"
+
+    # ── tasks ──
+    ChecklistSummary:
+      type: object
+      required: [done, total]
+      properties:
+        done: { type: integer, minimum: 0 }
+        total: { type: integer, minimum: 0 }
+    Task:
+      type: object
+      description: |
+        With `view=card`, `description` is omitted. The three dates are independent and optional:
+        startDate/endDate form the displayed range, and dueDate drives the calendar and overdue.
+      required: [id, title, status, priority, startDate, endDate, dueDate, position, checklist, commentCount, createdBy, createdAt, updatedAt, assignees, clients, labels, version]
+      properties:
+        id: { $ref: "#/components/schemas/TaskId" }
+        title: { type: string, minLength: 1, maxLength: 500 }
+        description: { type: [string, "null"], description: "Markdown. Omitted in view=card." }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        startDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        endDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        dueDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        position:
+          type: string
+          description: Fractional rank (lexicographic) within its status column
+          example: "a0V"
+        checklist: { $ref: "#/components/schemas/ChecklistSummary" }
+        commentCount: { type: integer, minimum: 0 }
+        createdBy: { $ref: "#/components/schemas/UserRef" }
+        createdAt: { $ref: "#/components/schemas/Instant" }
+        updatedAt: { $ref: "#/components/schemas/Instant" }
+        assignees:
+          type: array
+          items: { $ref: "#/components/schemas/UserRef" }
+        clients:
+          type: array
+          items: { $ref: "#/components/schemas/ClientRef" }
+        labels:
+          type: array
+          items: { $ref: "#/components/schemas/LabelRef" }
+        version: { type: integer }
+    TaskCalendarItem:
+      type: object
+      description: Sparse task returned by view=calendar
+      required: [id, title, status, priority, dueDate]
+      properties:
+        id: { $ref: "#/components/schemas/TaskId" }
+        title: { type: string }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+    TaskCreate:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 500 }
+        description: { type: [string, "null"] }
+        status: { $ref: "#/components/schemas/TaskStatus", default: todo }
+        priority: { $ref: "#/components/schemas/Priority", default: none }
+        startDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        endDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        dueDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        assigneeIds: { type: array, items: { $ref: "#/components/schemas/UserId" } }
+        clientIds: { type: array, items: { $ref: "#/components/schemas/ClientId" } }
+        labelIds: { type: array, items: { $ref: "#/components/schemas/LabelId" } }
+        afterTaskId:
+          type: [string, "null"]
+          description: Insert after this task in the column; null means the top. The server computes the position.
+    TaskUpdate:
+      type: object
+      minProperties: 1
+      description: Any subset of the TaskCreate fields. Moving columns means sending status (plus optional afterTaskId).
+      properties:
+        title: { type: string, minLength: 1, maxLength: 500 }
+        description: { type: [string, "null"] }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        startDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        endDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        dueDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        assigneeIds: { type: array, items: { $ref: "#/components/schemas/UserId" } }
+        clientIds: { type: array, items: { $ref: "#/components/schemas/ClientId" } }
+        labelIds: { type: array, items: { $ref: "#/components/schemas/LabelId" } }
+        afterTaskId: { type: [string, "null"] }
+    TaskDraft:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        dueDate: { oneOf: [{ $ref: "#/components/schemas/LocalDate" }, { type: "null" }] }
+        assigneeIds: { type: array, items: { $ref: "#/components/schemas/UserId" } }
+    TaskStats:
+      type: object
+      required: [groupBy, groups, total]
+      properties:
+        groupBy: { type: string, enum: [status, assignee] }
+        total: { type: integer, description: Distinct tasks matching the filters }
+        groups:
+          type: array
+          description: |
+            status: one entry per TaskStatus in board order, including zero counts.
+            assignee: entries sorted by count desc then name asc. A task with N assignees counts once for each.
+          items:
+            type: object
+            required: [key, count]
+            properties:
+              key: { type: string, description: A TaskStatus or a UserId }
+              count: { type: integer }
+              user: { $ref: "#/components/schemas/UserRef", description: Present when groupBy=assignee }
+        unassignedCount:
+          type: integer
+          description: Present when groupBy=assignee
+
+    ChecklistItem:
+      type: object
+      required: [id, text, done, position]
+      properties:
+        id: { type: string }
+        text: { type: string }
+        done: { type: boolean }
+        position: { type: string }
+    Comment:
+      type: object
+      required: [id, author, body, createdAt]
+      properties:
+        id: { type: string }
+        author: { $ref: "#/components/schemas/UserRef" }
+        body: { type: string, description: Markdown with @mentions }
+        createdAt: { $ref: "#/components/schemas/Instant" }
+
+    # ── dashboard ──
+    Dashboard:
+      type: object
+      required: [today, stats, dueSoon, awaitingReview]
+      properties:
+        today: { $ref: "#/components/schemas/LocalDate", description: The current date in the requested tz }
+        stats:
+          type: object
+          required: [myOpenTasks, overdue, dueThisWeek, awaitingReview, unreadInbox]
+          properties:
+            myOpenTasks: { type: integer, description: "Assigned to the caller, status group open" }
+            overdue: { type: integer, description: "Assigned to the caller, open, dueDate < today" }
+            dueThisWeek: { type: integer, description: "Assigned to the caller, open, today <= dueDate <= today+6" }
+            awaitingReview: { type: integer, description: Open change requests where the caller is reviewer }
+            unreadInbox: { type: integer }
+        dueSoon:
+          type: array
+          maxItems: 20
+          description: Overdue or due this week and assigned to the caller, ordered by dueDate asc
+          items: { $ref: "#/components/schemas/Task" }
+        awaitingReview:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/ChangeRequest" }
+
+    # ── future UI ──
+    InboxItem:
+      type: object
+      required: [id, kind, read, createdAt, actor]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [mention, assignment, update] }
+        read: { type: boolean }
+        createdAt: { $ref: "#/components/schemas/Instant" }
+        actor: { $ref: "#/components/schemas/UserRef" }
+        task:
+          type: object
+          properties:
+            id: { $ref: "#/components/schemas/TaskId" }
+            title: { type: string }
+        excerpt: { type: [string, "null"] }
+    Doc:
+      type: object
+      required: [id, title, updatedAt]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        client: { oneOf: [{ $ref: "#/components/schemas/ClientRef" }, { type: "null" }] }
+        updatedAt: { $ref: "#/components/schemas/Instant" }
+    ChangeRequest:
+      type: object
+      description: PROVISIONAL — gap R1 (semantics of change requests unknown)
+      required: [id, task, requestedBy, status, createdAt]
+      properties:
+        id: { type: string }
+        task:
+          type: object
+          required: [id, title]
+          properties:
+            id: { $ref: "#/components/schemas/TaskId" }
+            title: { type: string }
+        requestedBy: { $ref: "#/components/schemas/UserRef" }
+        reviewer: { $ref: "#/components/schemas/UserRef" }
+        status: { type: string, enum: [open, approved, rejected] }
+        summary: { type: [string, "null"] }
+        createdAt: { $ref: "#/components/schemas/Instant" }

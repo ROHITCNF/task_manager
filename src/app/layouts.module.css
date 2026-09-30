@@ -1,0 +1,25 @@
+.public {
+  min-height: 100%;
+  background: var(--color-bg-page);
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--size-sidebar-width) minmax(0, 1fr);
+  height: 100%;
+  background: var(--color-bg-page);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--color-bg-sidebar);
+  border-right: var(--size-border-width) solid var(--color-border-default);
+}
+
+.main {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}

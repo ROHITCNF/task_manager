@@ -1,0 +1,151 @@
+/* ── Button ── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: var(--size-control-height);
+  padding: 0 var(--space-4);
+  border: var(--size-border-width) solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: default;
+}
+
+.primary {
+  background: var(--color-primary-bg);
+  color: var(--color-text-on-primary);
+}
+
+.primary:disabled {
+  background: var(--color-primary-bg-disabled);
+}
+
+.secondary {
+  background: var(--color-bg-surface);
+  border-color: var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.ghost {
+  height: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-subtle);
+  font-weight: var(--font-weight-regular);
+}
+
+.sm {
+  font-size: var(--font-size-xs);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-control-height-sm);
+  height: var(--size-control-height-sm);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+}
+
+/* ── Fields ── */
+.field {
+  height: var(--size-control-height);
+  padding: 0 var(--space-3);
+  border: var(--size-border-width) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+}
+
+.field::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.fieldSm {
+  height: var(--size-control-height-sm);
+}
+
+.input {
+  min-width: 0;
+}
+
+.textarea {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: var(--size-textarea-height);
+  padding: var(--space-3);
+  line-height: var(--line-height-normal);
+  resize: vertical;
+}
+
+.selectRoot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.select {
+  width: 100%;
+  padding-right: var(--space-8);
+  appearance: none;
+  cursor: pointer;
+}
+
+.chevron {
+  position: absolute;
+  right: var(--space-2);
+  color: var(--color-text-primary);
+  pointer-events: none;
+}
+
+/* ── Segmented control ── */
+.segmented {
+  display: flex;
+  gap: var(--space-0-5);
+  padding: var(--space-0-5);
+  border: var(--size-border-width) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.segment {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1-5);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.segmentChecked {
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-toggle-thumb);
+  color: var(--color-text-primary);
+}

@@ -1,0 +1,289 @@
+{
+  "$description": "Colour tokens. Primitive values were sampled from docs/design/reference/*.png (2026-09-30). All values are estimated until confirmed against the existing app's CSS. Semantic tokens reference primitives as {path}. The dark theme is intentionally empty (deferred until a reference exists).",
+  "primitive": {
+    "white": {
+      "value": "#ffffff",
+      "estimated": true
+    },
+    "neutral": {
+      "50": {
+        "value": "#fafafa",
+        "estimated": true,
+        "seen": "board column bg, theme toggle track"
+      },
+      "100": {
+        "value": "#f2f2f2",
+        "estimated": true,
+        "seen": "calendar day cell border"
+      },
+      "200": {
+        "value": "#e5e5e5",
+        "estimated": true,
+        "seen": "card/input/row borders, sidebar divider, unassigned avatar bg"
+      },
+      "300": {
+        "value": "#d1d1d1",
+        "estimated": true,
+        "seen": "scrollbar thumb"
+      },
+      "400": {
+        "value": "#999999",
+        "estimated": true,
+        "seen": "author line, counts, weekday headers, roles, footer note"
+      },
+      "500": {
+        "value": "#7f7f7f",
+        "estimated": true,
+        "seen": "subtitles, stat labels, meta text, email, sign out"
+      },
+      "550": {
+        "value": "#757575",
+        "estimated": true,
+        "seen": "input placeholder"
+      },
+      "700": {
+        "value": "#4c4c4c",
+        "estimated": true,
+        "seen": "nav items, bar labels, settings helper text"
+      },
+      "900": {
+        "value": "#171717",
+        "estimated": true,
+        "seen": "headings, titles, numbers"
+      }
+    },
+    "indigo": {
+      "50": {
+        "value": "#efeffd",
+        "estimated": true,
+        "seen": "active nav bg"
+      },
+      "200": {
+        "value": "#ddddfb",
+        "estimated": true,
+        "seen": "login card border/glow"
+      },
+      "300": {
+        "value": "#b1b2f4",
+        "estimated": true,
+        "seen": "disabled primary button bg"
+      },
+      "500": {
+        "value": "#6466e9",
+        "estimated": true,
+        "seen": "primary button, bars, active nav text, today marker, workspace dot"
+      }
+    },
+    "red": {
+      "500": {
+        "value": "#cb3b32",
+        "estimated": true,
+        "seen": "overdue due-date text"
+      }
+    },
+    "priority": {
+      "urgent": {
+        "value": "#cf364c",
+        "estimated": true
+      },
+      "high": {
+        "value": "#e97b35",
+        "estimated": true
+      },
+      "medium": {
+        "value": "#e2b63f",
+        "estimated": true
+      },
+      "low": {
+        "value": "#4e81ee",
+        "estimated": true
+      },
+      "none": {
+        "value": "#9ea3ae",
+        "estimated": true
+      }
+    },
+    "avatar": {
+      "$description": "Background palette for initial-letter avatars. The UI picks one by hashing the user id. Observed on settings_light.png and taskboard_light.png.",
+      "1": {
+        "value": "#9f4db7",
+        "estimated": true
+      },
+      "2": {
+        "value": "#da4f7a",
+        "estimated": true
+      },
+      "3": {
+        "value": "#df742d",
+        "estimated": true
+      },
+      "4": {
+        "value": "#749e47",
+        "estimated": true
+      },
+      "5": {
+        "value": "#3c86cb",
+        "estimated": true
+      },
+      "6": {
+        "value": "#5f6bba",
+        "estimated": true
+      },
+      "7": {
+        "value": "#41682a",
+        "estimated": true
+      },
+      "8": {
+        "value": "#495a63",
+        "estimated": true
+      },
+      "9": {
+        "value": "#4395a5",
+        "estimated": true
+      }
+    }
+  },
+  "semantic": {
+    "light": {
+      "bg": {
+        "page": {
+          "value": "{primitive.white}"
+        },
+        "sidebar": {
+          "value": "{primitive.white}"
+        },
+        "surface": {
+          "value": "{primitive.white}"
+        },
+        "subtle": {
+          "value": "{primitive.neutral.50}"
+        },
+        "accent-subtle": {
+          "value": "{primitive.indigo.50}"
+        }
+      },
+      "text": {
+        "primary": {
+          "value": "{primitive.neutral.900}"
+        },
+        "secondary": {
+          "value": "{primitive.neutral.700}"
+        },
+        "muted": {
+          "value": "{primitive.neutral.500}"
+        },
+        "subtle": {
+          "value": "{primitive.neutral.400}"
+        },
+        "placeholder": {
+          "value": "{primitive.neutral.550}"
+        },
+        "accent": {
+          "value": "{primitive.indigo.500}"
+        },
+        "danger": {
+          "value": "{primitive.red.500}"
+        },
+        "on-primary": {
+          "value": "{primitive.white}"
+        }
+      },
+      "border": {
+        "default": {
+          "value": "{primitive.neutral.200}"
+        },
+        "subtle": {
+          "value": "{primitive.neutral.100}"
+        },
+        "accent": {
+          "value": "{primitive.indigo.200}"
+        }
+      },
+      "primary": {
+        "bg": {
+          "value": "{primitive.indigo.500}"
+        },
+        "bg-disabled": {
+          "value": "{primitive.indigo.300}"
+        }
+      },
+      "priority": {
+        "urgent": {
+          "value": "{primitive.priority.urgent}"
+        },
+        "high": {
+          "value": "{primitive.priority.high}"
+        },
+        "medium": {
+          "value": "{primitive.priority.medium}"
+        },
+        "low": {
+          "value": "{primitive.priority.low}"
+        },
+        "none": {
+          "value": "{primitive.priority.none}"
+        }
+      },
+      "avatar": {
+        "unassigned-bg": {
+          "value": "{primitive.neutral.200}"
+        },
+        "unassigned-fg": {
+          "value": "{primitive.neutral.500}"
+        },
+        "fg": {
+          "value": "{primitive.white}"
+        },
+        "1": {
+          "value": "{primitive.avatar.1}"
+        },
+        "2": {
+          "value": "{primitive.avatar.2}"
+        },
+        "3": {
+          "value": "{primitive.avatar.3}"
+        },
+        "4": {
+          "value": "{primitive.avatar.4}"
+        },
+        "5": {
+          "value": "{primitive.avatar.5}"
+        },
+        "6": {
+          "value": "{primitive.avatar.6}"
+        },
+        "7": {
+          "value": "{primitive.avatar.7}"
+        },
+        "8": {
+          "value": "{primitive.avatar.8}"
+        },
+        "9": {
+          "value": "{primitive.avatar.9}"
+        }
+      },
+      "scrollbar": {
+        "thumb": {
+          "value": "{primitive.neutral.300}"
+        }
+      },
+      "bar": {
+        "fill": {
+          "value": "{primitive.indigo.500}"
+        }
+      }
+    },
+    "dark": {}
+  },
+  "runtime": {
+    "$description": "Client colours are data from the API (Client.colour), not tokens. Pills derive tint and border from the runtime --client-colour property using these mix ratios (sampled: Bounce #ca3a32 -> pill bg #faebea, about a 10% mix with white).",
+    "client-pill-bg-mix": {
+      "value": "10%",
+      "estimated": true
+    },
+    "client-pill-border-mix": {
+      "value": "30%",
+      "estimated": true
+    }
+  }
+}

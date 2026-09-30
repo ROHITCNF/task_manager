@@ -1,0 +1,15 @@
+{
+  "$description": "Corner radii and shadows. These could not be measured reliably from the screenshots, so they are visual estimates that must be confirmed.",
+  "radius": {
+    "sm":   { "value": "4px",    "estimated": true },
+    "md":   { "value": "6px",    "estimated": true, "seen": "buttons, inputs, nav item, theme toggle" },
+    "lg":   { "value": "8px",    "estimated": true, "seen": "cards, panels, client rows, calendar cells, board columns" },
+    "xl":   { "value": "12px",   "estimated": true, "seen": "login card" },
+    "full": { "value": "9999px", "seen": "pills, avatars, dots, today marker" }
+  },
+  "shadow": {
+    "none":         { "value": "none" },
+    "toggle-thumb": { "value": "0 1px 2px rgba(23, 23, 23, 0.08)", "estimated": true, "seen": "selected theme option" },
+    "glow-primary": { "value": "0 0 40px 0 rgba(100, 102, 233, 0.25)", "estimated": true, "seen": "login card" }
+  }
+}
