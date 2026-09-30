@@ -132,6 +132,24 @@ export function createTasksStore(services, deps /* { getWorkspaceId, getTz } */)
 |---|---|
 | `split(text, source)` | Stores the drafts. **No UI consumes them yet** (gap S6). |
 
+### `inboxStore` (US-12)
+| State | Type |
+|---|---|
+| `filter` | `'all'\|'unread'` |
+| `items` | `InboxItem[]` |
+| `nextCursor` | `string\|null` |
+| `req`, `markAllReq` | `Req` |
+
+| Action | Behaviour |
+|---|---|
+| `load({ more })` | Lists items for the current filter (paged) |
+| `setFilter(filter)` | Switches the filter → `load()` |
+| `markAllRead()` | `POST read-all` → `load()` |
+
+| Selector | Result |
+|---|---|
+| `selectHasUnread` | Whether any loaded item is unread (drives the disabled state of "Mark all as read") |
+
 ### `uiStore`
 | State | Type |
 |---|---|
@@ -143,7 +161,7 @@ export function createTasksStore(services, deps /* { getWorkspaceId, getTz } */)
 
 ## 3. Reset rules
 
-- **Switching workspace** resets tasks, calendar, clients, dashboard, members, and quickCapture.
+- **Switching workspace** resets tasks, calendar, clients, dashboard, inbox, members, and quickCapture.
 - **Signing out** resets everything except `ui`.
 
 ## 4. Error handling

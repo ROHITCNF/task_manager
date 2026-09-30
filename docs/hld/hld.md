@@ -169,7 +169,7 @@ Zustand is the **state layer between the UI and the data layer**. It is the only
 | `quickCapture` | split drafts (no UI consumes them yet; gap S6) | no |
 | `ui` | theme preference (`system/light/dark`) | yes (localStorage) |
 
-`inbox` and `docs` stores will be added when gaps S1 and S2 are resolved.
+The `inbox` store (filter, items, cursor, mark-all-read) was added with US-12. The `docs` store will be added when gap S2 is resolved.
 
 ### 4.3 What stays out of Zustand
 
@@ -187,7 +187,7 @@ Router: React Router (ADR-0008). Two layouts: a **public** layout (no shell) and
 |---|---|---|---|---|---|
 | `/login` | Login | public | redirect to `/` if already signed in | `login_light.png` | Ready |
 | `/` | Home | shell | auth | `home_light.png` | Ready |
-| `/inbox` | Inbox | shell | auth | — | **Blocked: gap S1** |
+| `/inbox` | Inbox | shell | auth | `inbox_light.png` | Ready (empty state; item rows blocked on gap IN1) |
 | `/tasks` | Tasks board | shell | auth | `taskboard_light.png` | Ready |
 | `/tasks/:taskId` | Task detail | shell | auth | — | **Blocked: gap S3** (modal or page?) |
 | `/calendar` | Calendar | shell | auth | `calendar_light.png` | Ready (after the C1 decision) |

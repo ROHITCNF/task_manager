@@ -31,6 +31,11 @@
         "estimated": true,
         "seen": "author line, counts, weekday headers, roles, footer note"
       },
+      "450": {
+        "value": "#8b8b8b",
+        "estimated": true,
+        "seen": "disabled secondary button text (inbox 'Mark all as read')"
+      },
       "500": {
         "value": "#7f7f7f",
         "estimated": true,
@@ -177,6 +182,9 @@
         },
         "placeholder": {
           "value": "{primitive.neutral.550}"
+        },
+        "disabled": {
+          "value": "{primitive.neutral.450}"
         },
         "accent": {
           "value": "{primitive.indigo.500}"

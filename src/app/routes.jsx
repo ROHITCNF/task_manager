@@ -11,6 +11,7 @@ const Blank = lazy(() => import('../pages/BlankPage.jsx'));
 const LoginPage = lazy(() => import('../pages/LoginPage.jsx'));
 const HomePage = lazy(() => import('../pages/HomePage.jsx'));
 const TasksPage = lazy(() => import('../pages/TasksPage.jsx'));
+const InboxPage = lazy(() => import('../pages/InboxPage.jsx'));
 const CalendarPage = lazy(() => import('../pages/CalendarPage.jsx'));
 const ClientsPage = lazy(() => import('../pages/ClientsPage.jsx'));
 const QuickCapturePage = lazy(() => import('../pages/QuickCapturePage.jsx'));
@@ -28,7 +29,7 @@ export const routes = [
         element: <AppShell sidebar={<Sidebar />} />,
         children: [
           { path: '/', element: <HomePage /> },
-          { path: '/inbox', element: <Blank /> }, // deferred: gap S1
+          { path: '/inbox', element: <InboxPage /> },
           { path: '/tasks', element: <TasksPage /> },
           { path: '/calendar', element: <CalendarPage /> },
           { path: '/docs', element: <Blank /> }, // deferred: gap S2

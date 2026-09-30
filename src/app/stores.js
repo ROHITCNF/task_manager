@@ -4,7 +4,7 @@
  */
 import {
   createSessionStore, createWorkspaceStore, createTasksStore, createCalendarStore, createClientsStore,
-  createDashboardStore, createQuickCaptureStore, createUiStore,
+  createDashboardStore, createInboxStore, createQuickCaptureStore, createUiStore,
 } from '../state/index.js';
 import { currentTimeZone, todayLocal } from '../domain/dates.js';
 import { applyTheme as defaultApplyTheme } from './theme.js';
@@ -31,7 +31,7 @@ export function createStores(data, env = {}) {
   const stores = {};
 
   const resetWorkspaceScoped = () => {
-    for (const name of ['tasks', 'calendar', 'clients', 'dashboard', 'quickCapture']) stores[name].getState().reset();
+    for (const name of ['tasks', 'calendar', 'clients', 'dashboard', 'quickCapture', 'inbox']) stores[name].getState().reset();
   };
   const onUnauthenticated = () => stores.session.getState().handleUnauthenticated();
   const getWorkspaceId = () => stores.workspace.getState().currentId;
@@ -50,6 +50,7 @@ export function createStores(data, env = {}) {
   stores.clients = createClientsStore(data, scoped);
   stores.dashboard = createDashboardStore(data, { ...scoped, getTz });
   stores.quickCapture = createQuickCaptureStore(data, scoped);
+  stores.inbox = createInboxStore(data, scoped);
 
   return Object.freeze(stores);
 }

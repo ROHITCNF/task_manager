@@ -17,6 +17,14 @@ export const Button = forwardRef(function Button({ variant = 'primary', size = '
   );
 });
 
+/**
+ * Toggle chip (Inbox "All" / "Unread"). Selected = filled primary, default = outlined.
+ * @param {{ selected: boolean } & import('react').ButtonHTMLAttributes<HTMLButtonElement>} props
+ */
+export function Chip({ selected, className, type = 'button', ...rest }) {
+  return <button type={type} aria-pressed={selected} className={cx(styles.chip, selected && styles.chipSelected, className)} {...rest} />;
+}
+
 /** Icon-only button; `label` becomes the accessible name. */
 export function IconButton({ label, className, type = 'button', children, ...rest }) {
   return (

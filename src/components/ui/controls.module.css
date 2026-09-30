@@ -34,6 +34,11 @@
   color: var(--color-text-primary);
 }
 
+.secondary:disabled {
+  border-color: var(--color-border-subtle);
+  color: var(--color-text-disabled);
+}
+
 .ghost {
   height: auto;
   padding: 0;
@@ -63,6 +68,28 @@
   color: var(--color-text-primary);
   font-size: var(--font-size-base);
   cursor: pointer;
+}
+
+/* ── Chip ── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: var(--size-chip-height);
+  padding: 0 var(--space-2-5);
+  border: var(--size-border-width) solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  cursor: pointer;
+}
+
+.chipSelected {
+  border-color: var(--color-primary-bg);
+  background: var(--color-primary-bg);
+  color: var(--color-text-on-primary);
 }
 
 /* ── Fields ── */

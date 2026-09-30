@@ -70,6 +70,10 @@ export function fakeServices() {
         ? { items: [{ id: 'c2', name: 'Bounce' }], nextCursor: null }
         : { items: [{ id: 'c1', name: 'Aeidith' }], nextCursor: 'p2' })),
     },
+    inbox: {
+      list: vi.fn(async () => ({ items: [], nextCursor: null })),
+      markAllRead: vi.fn(async () => {}),
+    },
     quickCapture: {
       split: vi.fn(async (_ws, text) => text.split('\n').map((title) => ({ title }))),
     },

@@ -74,6 +74,15 @@ export class LabelApi {
   async list(wsId) { return (await this.http.get(`${ws(wsId)}/labels`)).body; }
 }
 
+export class InboxApi {
+  constructor(http) { this.http = http; }
+  async list(wsId, { unread, limit, cursor } = {}) {
+    return (await this.http.get(`${ws(wsId)}/inbox`, { query: { unread, limit, cursor } })).body;
+  }
+  async markRead(wsId, itemId) { await this.http.post(`${ws(wsId)}/inbox/${id(itemId)}/read`); }
+  async readAll(wsId) { await this.http.post(`${ws(wsId)}/inbox/read-all`); }
+}
+
 export class QuickCaptureApi {
   constructor(http) { this.http = http; }
   async split(wsId, text, source) {

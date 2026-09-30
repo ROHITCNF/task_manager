@@ -149,6 +149,19 @@ Reference: `settings_light.png`
 
 ---
 
+## US-12 — Inbox
+
+**As** a user, **I want** an inbox of my notifications **so that** I see mentions, assignments and updates.
+Reference: `inbox_light.png` (added 2026-09-30)
+
+1. `/inbox` shows a 53 px header with the title "Inbox", the filter pills "All" (selected by default) and "Unread", and on the right the buttons "Mark all as read" and "Notification settings".
+2. Selecting a pill switches the filter: All loads `GET …/inbox`, Unread loads `GET …/inbox?unread=true`. The selected pill is filled primary; the other is outlined.
+3. With no items, the main area shows the centred text "Nothing here yet. You'll see @mentions, assignments, status changes on your tasks and due-date reminders here."
+4. "Mark all as read" is disabled when no loaded item is unread (as in the reference). When enabled, it calls `POST …/inbox/read-all` and reloads.
+5. "Notification settings" is **inert** (gap IN4).
+6. Item rows are **not rendered** until their design has a reference (gap IN1).
+7. Matches reference.
+
 ## Deferred (need a reference first — see gaps.md)
 
-Inbox (S1) · Docs (S2) · Task detail (S3) · New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).
+Docs (S2) · Task detail (S3) · New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).

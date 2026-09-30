@@ -1,6 +1,6 @@
 # Screen Inventory
 
-Source: the seven screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login screen is a smaller capture at 1920 px wide.
+Source: the eight screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login and inbox screens are smaller captures at 1× scale (about 1905 px wide).
 
 | Screen | File |
 |---|---|
@@ -11,6 +11,7 @@ Source: the seven screenshots in `docs/design/reference/`. All are light theme a
 | Quick Capture | `quick-capture_light.png` |
 | Settings | `settings_light.png` |
 | Login | `login_light.png` |
+| Inbox | `inbox_light.png` |
 
 Legend: **Observed** means visible in a screenshot. **Inferred** means the likely behaviour, which is not confirmed. Every inferred item needs sign-off and is tracked in `gaps.md`.
 
@@ -393,17 +394,60 @@ Observed: there is no email/password option, no sign-up link, no "forgot passwor
 
 ---
 
-## 8. Shared components
+## 8. Inbox (`inbox_light.png`)
+
+Captured at 1× scale, 1905×929. Only the **empty state** is shown.
+
+### Layout regions
+
+1. Header bar: 53 px tall with a bottom border. The title and filter pills are on the left, and two buttons are on the right.
+2. Main area: a single empty-state line, centred horizontally, about 24 px below the header.
+
+### Components
+
+| Component | Observed details |
+|---|---|
+| Page title | "Inbox" (18 px, semibold) |
+| Filter pill: selected | "All". Filled primary, white text, fully rounded, 26 px tall |
+| Filter pill: default | "Unread". White with a `#e5e5e5` border and dark text, fully rounded, 26 px tall |
+| Button: secondary, disabled look | "Mark all as read". Lighter border (`#f2f2f2`) and grey text (`#8b8b8b`), 27 px tall, 12 px text |
+| Button: secondary | "Notification settings". Border `#e5e5e5` and dark text, 27 px tall, 12 px text |
+| Empty state | "Nothing here yet. You'll see @mentions, assignments, status changes on your tasks and due-date reminders here." Muted (`#999`), about 13 px, centred |
+
+### Interactive elements
+
+| Element | Likely behaviour (inferred) |
+|---|---|
+| All / Unread | Switches the list between all notifications and unread only (`GET …/inbox?unread=`) |
+| Mark all as read | Marks every item read (`POST …/inbox/read-all`). It looks disabled when there is nothing unread. |
+| Notification settings | Opens notification preferences. **That screen is not shown.** |
+| Inbox item (not shown) | Probably opens the related task |
+
+### Variants
+
+- Filter pill: selected / default.
+- Button: secondary enabled / secondary disabled (a new variant — earlier references only showed a disabled *primary* button).
+
+### Data
+
+- `filter: 'all' | 'unread'`
+- `items: InboxItem[]` (contract: `kind` = mention / assignment / update, `read`, `createdAt`, `actor`, `task`, `excerpt`), plus `nextCursor`
+- The empty copy lists four kinds: @mentions, assignments, status changes, and due-date reminders. The contract has three (`mention`, `assignment`, `update`); see gap IN5.
+
+---
+
+## 9. Shared components
 
 | Component | Used on | Notes |
 |---|---|---|
-| App shell / sidebar | All except Login | Workspace header, nav, theme toggle |
+| App shell / sidebar | All except Login (Inbox included) | Workspace header, nav, theme toggle |
 | Nav item | All except Login | Default and active variants |
 | Theme toggle (segmented control) | All except Login | 3 options |
 | Page header (title + optional actions) | Tasks, Calendar, Clients | Title on the left, actions on the right |
 | Page intro (title + muted subtitle/description) | Home, Quick Capture, Settings | Centred column layout |
 | Button: primary | Tasks, Clients, Quick Capture, Settings, Login | Enabled and disabled; "+ label" prefix pattern; full-width variant on Login |
-| Button: secondary/outline | Calendar (Today), Settings (Join) | |
+| Button: secondary/outline | Calendar (Today), Settings (Join), Inbox | Inbox adds a disabled secondary variant and a compact 27 px size |
+| Filter pill (toggle) | Inbox | Selected = filled primary; default = outlined |
 | Button: text/ghost | Tasks ("+ Add task"), sidebar ("Sign out") | |
 | Icon button | Calendar (‹ ›) | |
 | Text input | Tasks (search), Settings (×2) | Placeholder style |

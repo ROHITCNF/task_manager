@@ -17,6 +17,10 @@
       "value": "61px",
       "seen": "Tasks header including its bottom border"
     },
+    "header-height-compact": {
+      "value": "53px",
+      "seen": "Inbox header including its bottom border (inbox_light.png, 1×)"
+    },
     "board-column-width": {
       "value": "288px"
     },
@@ -56,9 +60,17 @@
       "value": "30px",
       "seen": "Tasks filter selects"
     },
+    "button-height-xs": {
+      "value": "27px",
+      "seen": "Inbox 'Mark all as read' / 'Notification settings'"
+    },
     "pill-height": {
       "value": "21px",
       "seen": "priority and client pills on task cards"
+    },
+    "chip-height": {
+      "value": "26px",
+      "seen": "Inbox All / Unread filter pills"
     },
     "avatar-sm": {
       "value": "20px",

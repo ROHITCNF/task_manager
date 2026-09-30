@@ -75,7 +75,10 @@ export const miscHandlers = [
   }),
 
   // ── future UI (empty but contract-shaped) ──
+  // ── inbox (US-12): the reference shows the empty state, so the mock inbox is empty ──
   http.get(`${API}/workspaces/:workspaceId/inbox`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
+  http.post(`${API}/workspaces/:workspaceId/inbox/read-all`, ({ params }) => requireMember(params.workspaceId).response ?? new HttpResponse(null, { status: 204 })),
+  http.post(`${API}/workspaces/:workspaceId/inbox/:itemId/read`, ({ params }) => requireMember(params.workspaceId).response ?? new HttpResponse(null, { status: 204 })),
   http.get(`${API}/workspaces/:workspaceId/docs`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
   http.get(`${API}/workspaces/:workspaceId/change-requests`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
 ];

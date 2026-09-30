@@ -2,9 +2,9 @@
  * Data layer entry point (docs/lld/data-layer.md §8). The only symbol src/app imports from src/data.
  */
 import { HttpClient } from './http/HttpClient.js';
-import { AuthApi, ClientApi, DashboardApi, LabelApi, MeApi, QuickCaptureApi, TaskApi, WorkspaceApi } from './api/index.js';
+import { AuthApi, ClientApi, DashboardApi, InboxApi, LabelApi, MeApi, QuickCaptureApi, TaskApi, WorkspaceApi } from './api/index.js';
 import {
-  AuthService, ClientService, DashboardService, LabelService, QuickCaptureService, TaskService, WorkspaceService,
+  AuthService, ClientService, DashboardService, InboxService, LabelService, QuickCaptureService, TaskService, WorkspaceService,
 } from './services/index.js';
 
 /**
@@ -23,6 +23,7 @@ export function createDataLayer(config, { fetchImpl, navigator } = {}) {
     clients: new ClientService(new ClientApi(http)),
     labels: new LabelService(new LabelApi(http)),
     quickCapture: new QuickCaptureService(new QuickCaptureApi(http)),
+    inbox: new InboxService(new InboxApi(http)),
   });
 }
 

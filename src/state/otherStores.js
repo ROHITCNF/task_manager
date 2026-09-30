@@ -138,6 +138,61 @@ export function createQuickCaptureStore({ quickCapture }, deps) {
   }));
 }
 
+const INBOX_PAGE = 50;
+
+/**
+ * Inbox (US-12): All/Unread filter, paged items, mark all as read.
+ * @param {{ inbox: import('../data/services/index.js').InboxService }} services
+ * @param {{ getWorkspaceId: () => string|null, onUnauthenticated?: () => void }} deps
+ */
+export function createInboxStore({ inbox }, deps) {
+  const tracker = createRequestTracker();
+  const initial = () => ({ filter: 'all', items: [], nextCursor: null, req: IDLE, markAllReq: IDLE });
+
+  return createStore((set, get) => ({
+    ...initial(),
+
+    async load({ more = false } = {}) {
+      const wsId = deps.getWorkspaceId();
+      const { filter, nextCursor, req } = get();
+      if (!wsId || (more && (!nextCursor || req.status === 'loading'))) return;
+      const isCurrent = tracker.start('inbox');
+      set({ req: LOADING });
+      try {
+        const page = await inbox.list(wsId, { unread: filter === 'unread', cursor: more ? nextCursor : undefined, limit: INBOX_PAGE });
+        if (!isCurrent()) return;
+        set((s) => ({ items: more ? [...s.items, ...page.items] : page.items, nextCursor: page.nextCursor, req: SUCCESS }));
+      } catch (error) {
+        if (isCurrent()) set({ req: toFailure(error, deps) });
+      }
+    },
+
+    /** @param {'all'|'unread'} filter */
+    setFilter(filter) {
+      if (filter === get().filter) return undefined;
+      set({ filter, items: [], nextCursor: null });
+      return get().load();
+    },
+
+    async markAllRead() {
+      const wsId = deps.getWorkspaceId();
+      if (!wsId || get().markAllReq.status === 'loading') return;
+      set({ markAllReq: LOADING });
+      try {
+        await inbox.markAllRead(wsId);
+        set({ markAllReq: SUCCESS });
+        await get().load();
+      } catch (error) {
+        set({ markAllReq: toFailure(error, deps) });
+      }
+    },
+
+    reset() { tracker.invalidateAll(); set(initial()); },
+  }));
+}
+
+export const selectHasUnread = (s) => s.items.some((item) => !item.read);
+
 export const THEME_KEY = 'dmt.theme';
 const THEMES = ['system', 'light', 'dark'];
 

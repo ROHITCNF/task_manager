@@ -10,7 +10,8 @@ Suggested capture method: take a screenshot from the existing app for each item,
 
 | Gap | Decision |
 |---|---|
-| S1, S2, S3, S4, S6, S7, S8, S9, S10 | **Deferred.** Phase 1 builds only the referenced screens. Controls that lead to these screens render as in the reference but are **inert**. Inbox and Docs routes show the shell with an empty main area. |
+| S2, S3, S4, S6, S7, S8, S9, S10 | **Deferred.** Phase 1 builds only the referenced screens. Controls that lead to these screens render as in the reference but are **inert**. The Docs route shows the shell with an empty main area. |
+| S1 | **Covered (empty state)** by `inbox_light.png`, added 2026-09-30. The remaining Inbox gaps are IN1–IN5 below. |
 | C1 | **Fix.** Use an equal 7-column grid aligned with the weekday headers, with titles truncated by an ellipsis. |
 | T1 | **Deferred.** The toggle and theme plumbing are built; the dark palette stays empty. |
 | Auth (L1–L5) | Mock login for now (ADR-0012). L1–L5 are revisited when Google is wired. |
@@ -28,7 +29,7 @@ Unlisted gaps are still open.
 
 | # | Screen | Why it's needed | Pri |
 |---|---|---|---|
-| S1 | **Inbox** | In the nav; the Home card "Unread in inbox" links to it. Item types: mentions, assignments, updates. | P0 |
+| S1 | ~~Inbox~~ **Covered** by `inbox_light.png` (empty state only). See IN1–IN5. | — |
 | S2 | **Docs** | In the nav; clients show "N docs" counts | P0 |
 | S3 | **Task detail** (view/edit) | Opened by every task card and calendar entry. Should show fields, checklist, comments, change requests, activity. | P0 |
 | S4 | **New task form** | From "+ New task" and "+ Add task". Modal or page? Which fields are required? | P0 |
@@ -70,6 +71,15 @@ Unlisted gaps are still open.
 | L5 | Post-login redirect: always Home, or back to the originally requested URL? | P2 |
 | L6 | Login screen in dark theme (card glow in dark) | P2 |
 | L7 | Button hover/focus state | P2 |
+
+### Inbox
+| # | State | Pri |
+|---|---|---|
+| IN1 | **Inbox item row design** (the populated list). Only the empty state is shown. | P0 |
+| IN2 | "Unread" filter selected, and its empty state (is the copy the same?) | P1 |
+| IN3 | "Mark all as read" enabled state, and whether it is disabled exactly when nothing is unread | P1 |
+| IN4 | Notification settings screen | P1 |
+| IN5 | Item kinds: the empty copy lists 4 kinds (mentions, assignments, status changes, due-date reminders); the contract has 3 (`mention`, `assignment`, `update`). Add `status_change` and `due_reminder`? | P1 |
 
 ### Home
 | # | State | Pri |

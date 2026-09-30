@@ -86,6 +86,16 @@ export const toDashboard = (dto) => freeze({
   awaitingReview: freeze([...(dto.awaitingReview ?? [])]),
 });
 
+export const toInboxItem = (dto) => freeze({
+  id: dto.id,
+  kind: dto.kind,
+  read: Boolean(dto.read),
+  createdAt: toDate(dto.createdAt),
+  actor: toUserRef(dto.actor),
+  task: dto.task ? freeze({ id: dto.task.id, title: dto.task.title }) : null,
+  excerpt: dto.excerpt ?? null,
+});
+
 /** List envelope → Page. */
 export const toPage = (envelope, mapItem) => freeze({
   items: freeze(envelope.data.map(mapItem)),

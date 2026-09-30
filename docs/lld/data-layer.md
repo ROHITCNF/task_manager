@@ -117,6 +117,7 @@ A gateway is a thin class per resource. It returns **raw DTOs** (wire format), a
 | `ClientApi` | `list(wsId, { q, limit, cursor })`, `create(wsId, dto)`, `update(wsId, id, patch, version)`, `remove(wsId, id, version)` |
 | `LabelApi` | `list(wsId)` |
 | `QuickCaptureApi` | `split(wsId, text, source)` |
+| `InboxApi` | `list(wsId, { unread, limit, cursor })`, `markRead(wsId, itemId)`, `readAll(wsId)` |
 
 Each constructor takes `(http: HttpClient)`.
 
@@ -169,6 +170,7 @@ export class DashboardService { constructor(dashboardApi) {}  /** @returns {Prom
 export class ClientService    { constructor(clientApi) {}     /** @returns {Promise<Page<Client>>} */ list(wsId, { cursor, limit, q }) {} }
 export class LabelService     { constructor(labelApi) {}      /** @returns {Promise<Label[]>} */ list(wsId) {} }
 export class QuickCaptureService { constructor(quickCaptureApi) {} /** @returns {Promise<{title:string}[]>} */ split(wsId, text, source) {} }
+export class InboxService    { constructor(inboxApi) {}      /** @returns {Promise<Page<InboxItem>>} */ list(wsId, { unread, cursor, limit }) {}  /** @returns {Promise<void>} */ markAllRead(wsId) {} }
 ```
 
 ```js
