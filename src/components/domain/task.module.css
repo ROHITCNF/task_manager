@@ -48,6 +48,49 @@
   line-height: var(--line-height-normal);
 }
 
-.assignees {
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover,
+.clickable:focus-within {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.titleButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
   margin-top: var(--space-2-5);
+}
+
+.statusSelect {
+  visibility: hidden;
+  width: var(--size-card-status-select-width);
+}
+
+.card:hover .statusSelect,
+.card:focus-within .statusSelect {
+  visibility: visible;
+}
+
+.statusSelect select {
+  height: var(--size-card-status-select-height);
+  padding-left: var(--space-2);
+  font-size: var(--font-size-xs);
+}
+
+.statusSelect > span {
+  width: 100%;
 }

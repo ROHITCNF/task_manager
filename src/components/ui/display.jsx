@@ -32,7 +32,7 @@ export function Pill({ tone = 'outline', colour, className, children }) {
 
 /**
  * Round avatar: photo, initial on a colour, or "?" when unassigned.
- * @param {{ src?: string|null, alt?: string, initial?: string, colour?: string, size?: 'sm'|'md', unassigned?: boolean, className?: string }} props
+ * @param {{ src?: string|null, alt?: string, initial?: string, colour?: string, size?: 'xs'|'sm'|'md', unassigned?: boolean, className?: string }} props
  */
 export function Avatar({ src, alt = '', initial, colour, size = 'sm', unassigned = false, className }) {
   const cls = cx(styles.avatar, styles[`avatar-${size}`], unassigned && styles.unassigned, className);

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { http as mswHttp, HttpResponse } from 'msw';
-import { setupMockServer, testConfig, TEST_BASE_URL } from '../../tests/setup/mockServer.js';
+import { setupMockServer, signInAs, testConfig, TEST_BASE_URL } from '../../tests/setup/mockServer.js';
 import { createDataLayer } from './index.js';
 import { HttpClient } from './http/HttpClient.js';
 import {
-  MappingError, NetworkError, NotFoundError, StaleVersionError, UnauthenticatedError, ValidationError, RateLimitedError, ServerError, ConflictError,
+  ForbiddenError, MappingError, NetworkError, NotFoundError, StaleVersionError, UnauthenticatedError, ValidationError, RateLimitedError, ServerError, ConflictError,
 } from './errors/index.js';
 import { toTask } from './mappers/index.js';
 
@@ -198,12 +198,32 @@ describe('services against the mock server', () => {
     expect(dashboard.dueSoon).toEqual([]);
   });
 
-  it('updates with optimistic concurrency', async () => {
-    const data = await signedIn();
+  it('updates with optimistic concurrency (as the workspace owner)', async () => {
+    const data = createDataLayer(testConfig);
+    signInAs('neeraj@intellicar.in');
     const [task] = (await data.tasks.list(WS, { status: ['backlog'], limit: 1 })).items;
     const updated = await data.tasks.update(WS, task, { priority: 'low' });
     expect(updated).toMatchObject({ priority: 'low', version: task.version + 1 });
     await expect(data.tasks.update(WS, task, { priority: 'high' })).rejects.toBeInstanceOf(StaleVersionError);
+  });
+
+  it('refuses edits from members who did not create the task (US-14 permission rule)', async () => {
+    const data = await signedIn();
+    const [task] = (await data.tasks.list(WS, { status: ['backlog'], limit: 1 })).items;
+    expect(task.permissions.canEdit).toBe(false);
+    await expect(data.tasks.update(WS, task, { priority: 'low' })).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it('serves the full task and its history (card_click_state*_light.png)', async () => {
+    const data = await signedIn();
+    const [listed] = (await data.tasks.list(WS, { status: ['backlog'], limit: 1 })).items;
+    const task = await data.tasks.get(WS, listed.id);
+    expect(task).toMatchObject({ title: 'Re: Intellicar Track Platform cleanup', description: 'CSM - NIRANJAN BALAJI.' });
+    expect(task.createdAt.toISOString()).toBe('2026-09-23T14:26:00.000Z');
+    const history = await data.tasks.history(WS, listed.id);
+    expect(history.stages).toEqual([expect.objectContaining({ status: 'backlog', exitedAt: null, approximate: true })]);
+    expect(history.events.map((e) => e.type)).toEqual(['created', 'subtask_added', 'field_changed']);
+    expect(history.events[2]).toMatchObject({ field: 'endDate', from: '2026-09-23', to: '2026-09-28' });
   });
 
   it('creates and joins workspaces', async () => {

@@ -30,3 +30,4 @@ export const useDashboard = bind('dashboard');
 export const useQuickCapture = bind('quickCapture');
 export const useUi = bind('ui');
 export const useInbox = bind('inbox');
+export const useTaskDetail = bind('taskDetail');

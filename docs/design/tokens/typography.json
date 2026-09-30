@@ -6,6 +6,11 @@
     }
   },
   "font-size": {
+    "2xs": {
+      "value": "9px",
+      "estimated": true,
+      "seen": "initials in 14px avatars (task drawer chips)"
+    },
     "xs": {
       "value": "12px",
       "estimated": true,

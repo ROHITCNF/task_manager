@@ -93,8 +93,31 @@ describe('avatar', () => {
     expect(initialOf('')).toBe('?');
   });
   it('maps ids to a stable palette token 1–9', () => {
-    expect(avatarToken('usr_01J8Z001000000000000000008')).toBe('--color-avatar-1');
+    expect(avatarToken('usr_01J8Z00100000000000000000J')).toBe('--color-avatar-1');
     expect(avatarToken('usr_01J8Z00E000000000000000006')).toBe('--color-avatar-9');
+    expect(avatarToken('usr_01J8Z00F000000000000000006')).toBe('--color-avatar-12');
     expect(avatarToken('x')).toBe(avatarToken('x'));
+  });
+});
+
+describe('task drawer formats and history wording', async () => {
+  const { formatDateYear, formatInstantDateTime, formatDuration, describeEvent } = await import('./index.js');
+
+  it('formats dates, date-times and durations like the references', () => {
+    expect(formatDateYear('2026-09-23')).toBe('23 Sept 2026');
+    expect(formatInstantDateTime(new Date('2026-09-23T14:26:00Z'), 'Asia/Kolkata')).toBe('23 Sept, 19:56');
+    const sixDays18h = ((6 * 24) + 18) * 3600e3 + 25 * 60e3;
+    expect(formatDuration(sixDays18h)).toBe('6d 18h');
+    expect(formatDuration(5 * 3600e3)).toBe('5h');
+    expect(formatDuration(12 * 60e3)).toBe('12m');
+  });
+
+  it('describes the referenced event types and skips unknown ones', () => {
+    expect(describeEvent({ type: 'created' })).toBe('created this task');
+    expect(describeEvent({ type: 'subtask_added', subtaskTitle: 'test 1' })).toBe('added subtask “test 1”');
+    expect(describeEvent({ type: 'field_changed', field: 'endDate', from: '2026-09-23', to: '2026-09-28' }))
+      .toBe('changed the end date from 23 Sept 2026 to 28 Sept 2026');
+    expect(describeEvent({ type: 'field_changed', field: 'priority', from: 'low', to: 'high' })).toBe('changed the priority from Low to High');
+    expect(describeEvent({ type: 'mystery' })).toBeNull();
   });
 });

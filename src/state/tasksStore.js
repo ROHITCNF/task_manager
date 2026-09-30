@@ -103,6 +103,18 @@ export function createTasksStore({ tasks, labels }, deps) {
       return get().loadBoard();
     },
 
+    /** Card hover status select (US-13): saves the new status, then reloads the board so the card moves. */
+    async changeStatus(task, status) {
+      const wsId = deps.getWorkspaceId();
+      if (!wsId || task.status === status || !task.permissions?.canEdit) return;
+      try {
+        await tasks.update(wsId, task, { status });
+      } catch (error) {
+        toFailure(error, deps);
+      }
+      await get().loadBoard();
+    },
+
     /** Workspace labels for the "All labels" filter (US-05). */
     async loadLabels() {
       const wsId = deps.getWorkspaceId();

@@ -15,4 +15,7 @@ export function setupMockServer() {
   return server;
 }
 
+/** Signs the mock server's session in as a fixture user by email (e.g. the workspace owner). */
+export const signInAs = (email) => db.signIn(email);
+
 export const testConfig = Object.freeze({ apiMode: 'mock', apiBaseUrl: TEST_BASE_URL, authMode: 'mock', requestTimeoutMs: 2000 });

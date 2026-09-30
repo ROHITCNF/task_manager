@@ -59,6 +59,28 @@ export function formatLong(localDate) {
 /** (2026, 9) → 'September 2026' */
 export const formatMonthYear = (year, month) => `${MONTHS_LONG[month - 1]} ${year}`;
 
+/** '2026-09-23' → '23 Sept 2026' (task drawer dates, history values) */
+export function formatDateYear(localDate) {
+  const { year } = parseLocalDate(localDate);
+  return `${formatShort(localDate)} ${year}`;
+}
+
+/** Date → '23 Sept, 19:56' in the given timezone. */
+export function formatInstantDateTime(date, timeZone) {
+  const time = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date);
+  return `${formatShort(todayLocal(timeZone, date))}, ${time}`;
+}
+
+/** Milliseconds → '6d 18h' (history stage durations). Under a day: '5h', under an hour: '12m'. */
+export function formatDuration(ms) {
+  const minutes = Math.max(0, Math.floor(ms / 60000));
+  const days = Math.floor(minutes / 1440);
+  const hours = Math.floor((minutes % 1440) / 60);
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h`;
+  return `${minutes}m`;
+}
+
 /** An instant shown as a short date in the given timezone: Date → '23 Sept'. */
 export const formatInstantShort = (date, timeZone) => formatShort(todayLocal(timeZone, date));
 

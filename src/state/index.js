@@ -1,6 +1,7 @@
 export { createSessionStore } from './sessionStore.js';
 export { createWorkspaceStore, selectCurrentWorkspace, CURRENT_WORKSPACE_KEY } from './workspaceStore.js';
 export { createTasksStore } from './tasksStore.js';
+export { createTaskDetailStore } from './taskDetailStore.js';
 export {
   createCalendarStore, createClientsStore, createDashboardStore, createInboxStore, createQuickCaptureStore, createUiStore,
   selectHasUnread, THEME_KEY,

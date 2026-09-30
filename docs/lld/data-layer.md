@@ -112,7 +112,7 @@ A gateway is a thin class per resource. It returns **raw DTOs** (wire format), a
 | `AuthApi` | `getSession()`, `mockLogin(email?)`, `logout()`, `googleStartUrl(returnTo)` (a string; no request). Constructor: `(http, baseUrl)` |
 | `MeApi` | `getMe()`, `listWorkspaces()` |
 | `WorkspaceApi` | `create(name)`, `join(inviteCode)`, `get(wsId)`, `listMembers(wsId, { limit, cursor })` |
-| `TaskApi` | `list(wsId, params)`, `stats(wsId, params)`, `get(wsId, id)`, `create(wsId, dto)`, `createBulk(wsId, dtos)`, `update(wsId, id, patch, version)`, `remove(wsId, id, version)` |
+| `TaskApi` | `list(wsId, params)`, `stats(wsId, params)`, `get(wsId, id)`, `history(wsId, id)`, `create(wsId, dto)`, `createBulk(wsId, dtos)`, `update(wsId, id, patch, version)`, `remove(wsId, id, version)` |
 | `DashboardApi` | `get(wsId, tz)` |
 | `ClientApi` | `list(wsId, { q, limit, cursor })`, `create(wsId, dto)`, `update(wsId, id, patch, version)`, `remove(wsId, id, version)` |
 | `LabelApi` | `list(wsId)` |
@@ -165,6 +165,8 @@ export class TaskService {
   /** @returns {Promise<TaskStats>} */                                           stats(wsId, groupBy, query) {}
   /** @returns {Promise<Task>} */                                                update(wsId, task, patch) {}  // sends task.version as If-Match
   /** @returns {Promise<Task[]>} */                                              createBulk(wsId, drafts) {}
+  /** @returns {Promise<Task>} full view with permissions */                     get(wsId, id) {}
+  /** @returns {Promise<TaskHistory>} */                                        history(wsId, id) {}
 }
 export class DashboardService { constructor(dashboardApi) {}  /** @returns {Promise<Dashboard>} */ get(wsId, tz) {} }
 export class ClientService    { constructor(clientApi) {}     /** @returns {Promise<Page<Client>>} */ list(wsId, { cursor, limit, q }) {} }

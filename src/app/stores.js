@@ -3,7 +3,7 @@
  * The only place that connects src/data to src/state.
  */
 import {
-  createSessionStore, createWorkspaceStore, createTasksStore, createCalendarStore, createClientsStore,
+  createSessionStore, createWorkspaceStore, createTasksStore, createTaskDetailStore, createCalendarStore, createClientsStore,
   createDashboardStore, createInboxStore, createQuickCaptureStore, createUiStore,
 } from '../state/index.js';
 import { currentTimeZone, todayLocal } from '../domain/dates.js';
@@ -31,7 +31,7 @@ export function createStores(data, env = {}) {
   const stores = {};
 
   const resetWorkspaceScoped = () => {
-    for (const name of ['tasks', 'calendar', 'clients', 'dashboard', 'quickCapture', 'inbox']) stores[name].getState().reset();
+    for (const name of ['tasks', 'taskDetail', 'calendar', 'clients', 'dashboard', 'quickCapture', 'inbox']) stores[name].getState().reset();
   };
   const onUnauthenticated = () => stores.session.getState().handleUnauthenticated();
   const getWorkspaceId = () => stores.workspace.getState().currentId;
@@ -51,6 +51,7 @@ export function createStores(data, env = {}) {
   stores.dashboard = createDashboardStore(data, { ...scoped, getTz });
   stores.quickCapture = createQuickCaptureStore(data, scoped);
   stores.inbox = createInboxStore(data, scoped);
+  stores.taskDetail = createTaskDetailStore(data, { ...scoped, onTaskChanged: () => stores.tasks.getState().loadBoard() });
 
   return Object.freeze(stores);
 }

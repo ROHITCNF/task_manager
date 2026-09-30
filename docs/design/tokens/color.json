@@ -145,7 +145,36 @@
       "9": {
         "value": "#4395a5",
         "estimated": true
+      },
+      "10": {
+        "value": "#77909b",
+        "estimated": true,
+        "seen": "Anusha (task drawer member chips, 1× capture)"
+      },
+      "11": {
+        "value": "#7e1b9e",
+        "estimated": true,
+        "seen": "Joseph (task drawer member chips, 1× capture)"
+      },
+      "12": {
+        "value": "#c7175c",
+        "estimated": true,
+        "seen": "Rohit (task drawer member chips, 1× capture)"
+      },
+      "13": {
+        "value": "#8f6e65",
+        "estimated": true,
+        "seen": "Kriti (task drawer member chips, 1× capture)"
+      },
+      "14": {
+        "value": "#00897b",
+        "estimated": true,
+        "seen": "Debnath (task drawer member chips, 1× capture)"
       }
+    },
+    "overlay": {
+      "value": "rgba(0, 0, 0, 0.2)",
+      "seen": "scrim behind the task drawer (white → #ccc)"
     }
   },
   "semantic": {
@@ -165,6 +194,12 @@
         },
         "accent-subtle": {
           "value": "{primitive.indigo.50}"
+        },
+        "overlay": {
+          "value": "{primitive.overlay}"
+        },
+        "disabled": {
+          "value": "{primitive.neutral.50}"
         }
       },
       "text": {
@@ -268,6 +303,21 @@
         },
         "9": {
           "value": "{primitive.avatar.9}"
+        },
+        "10": {
+          "value": "{primitive.avatar.10}"
+        },
+        "11": {
+          "value": "{primitive.avatar.11}"
+        },
+        "12": {
+          "value": "{primitive.avatar.12}"
+        },
+        "13": {
+          "value": "{primitive.avatar.13}"
+        },
+        "14": {
+          "value": "{primitive.avatar.14}"
         }
       },
       "scrollbar": {
@@ -278,6 +328,27 @@
       "bar": {
         "fill": {
           "value": "{primitive.indigo.500}"
+        }
+      },
+      "status": {
+        "$description": "Stage colours in task history. Only Backlog is referenced (grey); the others default to the same grey until referenced (gap TD5).",
+        "backlog": {
+          "value": "{primitive.priority.none}"
+        },
+        "todo": {
+          "value": "{primitive.priority.none}"
+        },
+        "in-progress": {
+          "value": "{primitive.priority.none}"
+        },
+        "testing-validation": {
+          "value": "{primitive.priority.none}"
+        },
+        "done": {
+          "value": "{primitive.priority.none}"
+        },
+        "canceled": {
+          "value": "{primitive.priority.none}"
         }
       }
     },

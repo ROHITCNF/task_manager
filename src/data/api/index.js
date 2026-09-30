@@ -40,6 +40,7 @@ export class TaskApi {
   async list(wsId, query) { return (await this.http.get(`${ws(wsId)}/tasks`, { query })).body; }
   async stats(wsId, query) { return (await this.http.get(`${ws(wsId)}/tasks/stats`, { query })).body; }
   async get(wsId, taskId) { return (await this.http.get(`${ws(wsId)}/tasks/${id(taskId)}`)).body; }
+  async history(wsId, taskId) { return (await this.http.get(`${ws(wsId)}/tasks/${id(taskId)}/history`)).body; }
   async create(wsId, dto) { return (await this.http.post(`${ws(wsId)}/tasks`, dto)).body; }
   async createBulk(wsId, dtos) { return (await this.http.post(`${ws(wsId)}/tasks/bulk`, { tasks: dtos })).body; }
   async update(wsId, taskId, patch, version) {

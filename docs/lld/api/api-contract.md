@@ -71,6 +71,9 @@ Content-Type: application/problem+json
 | Clients | `GET …/clients` |
 | Quick Capture | `POST …/quick-capture/split` (the draft UI is deferred) → `POST …/tasks/bulk` (future) |
 | Settings | `GET …/members` · `POST /workspaces` · `POST /workspaces/join` |
+| Inbox | `GET …/inbox?unread=` · `POST …/inbox/read-all` |
+| Task drawer | `GET …/tasks/{id}` (full view, with `permissions`) · `GET …/members` · `GET …/clients` · on the History tab: `GET …/tasks/{id}/history` · saves: `PATCH …/tasks/{id}` with `If-Match` |
+| Card hover | `PATCH …/tasks/{id}` `{ status }` with `If-Match` |
 
 ---
 
@@ -181,6 +184,8 @@ GET /api/v1/workspaces/wsp_…/tasks/stats?groupBy=assignee&statusGroup=open
 | Client order | By `name`, **binary collation** (uppercase first). This reproduces the reference, where "BGauss" comes before "Battery Smart". |
 | Position | Fractional-index string, unique within (workspace, status). The server assigns it from `afterTaskId`. |
 | Stats by assignee | A task with N assignees counts once for each. `unassignedCount` counts tasks with no assignee. |
+| Task permissions | `canEdit` = the caller created the task or is a workspace OWNER (gap TD8). `canComment` = any member. Returned on every task view. |
+| History | `stages` cover the time spent in each status; `approximate` marks stages that started before tracking existed. `events` are oldest first. |
 
 The frontend reproduces **overdue** only for display (red text). The backend's dashboard counts are authoritative.
 

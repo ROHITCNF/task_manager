@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Outlet } from 'react-router';
 import { useClients, useTasks, useWorkspace } from '../../state/hooks.js';
 import { BoardToolbar } from './BoardToolbar.jsx';
 import { TaskBoard } from './TaskBoard.jsx';
@@ -46,6 +47,10 @@ export function TasksScreen() {
         onSearch={setSearch}
       />
       <TaskBoard />
+      {/* /tasks/:taskId renders the task drawer here (US-14/15). */}
+      <Suspense fallback={null}>
+        <Outlet />
+      </Suspense>
     </div>
   );
 }

@@ -11,8 +11,9 @@ const clone = (value) => structuredClone(value);
 
 function initialState() {
   const clientIdByName = Object.fromEntries(CLIENTS.map((c) => [c.name, c.id]));
-  const tasks = buildTasks().map(({ createdByKey, assigneeKeys, clientNames, ...rest }) => ({
+  const tasks = buildTasks().map(({ createdByKey, assigneeKeys, clientNames, events, ...rest }) => ({
     ...rest,
+    events: events.map(({ byKey, ...e }, i) => ({ ...e, id: `evt_${rest.id.slice(4)}_${i + 1}`, actorId: USERS[byKey].id })),
     workspaceId: DMT_WORKSPACE_ID,
     createdById: USERS[createdByKey].id,
     assigneeIds: assigneeKeys.map((k) => USERS[k].id),
@@ -90,8 +91,13 @@ export const db = {
   workspaceDto(workspace, userId) {
     return { id: workspace.id, name: workspace.name, role: this.membership(workspace.id, userId)?.role ?? 'MEMBER', createdAt: workspace.createdAt };
   },
+  /** Task permissions for a viewer (gap TD8 default): the creator or a workspace OWNER can edit. */
+  permissionsFor(task, viewerId) {
+    const owner = this.membership(task.workspaceId, viewerId)?.role === 'OWNER';
+    return { canEdit: task.createdById === viewerId || owner, canComment: true };
+  },
   /** @param {'card'|'calendar'|'full'} view */
-  taskDto(task, view = 'card') {
+  taskDto(task, view = 'card', viewerId = null) {
     if (view === 'calendar') {
       return { id: task.id, title: task.title, status: task.status, priority: task.priority, dueDate: task.dueDate };
     }
@@ -113,8 +119,17 @@ export const db = {
       clients: task.clientIds.map((id) => this.clientRef(id)),
       labels: task.labelIds.map((id) => this.labelRef(id)),
       version: task.version,
+      permissions: this.permissionsFor(task, viewerId),
     };
     return view === 'full' ? { ...dto, description: task.description } : dto;
+  },
+  historyDto(task) {
+    const created = { id: `evt_${task.id.slice(4)}_0`, type: 'created', actor: this.userRef(task.createdById), createdAt: task.createdAt };
+    const events = task.events.map(({ actorId, ...e }) => ({ ...e, actor: this.userRef(actorId) }));
+    return {
+      stages: [{ status: task.status, enteredAt: task.createdAt, exitedAt: null, approximate: true }],
+      events: [created, ...events],
+    };
   },
   clientDto(client) {
     const taskCount = this.state.tasks.filter((t) => t.clientIds.includes(client.id)).length;

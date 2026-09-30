@@ -489,6 +489,40 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "412": { $ref: "#/components/responses/PreconditionFailed" }
 
+  /workspaces/{workspaceId}/tasks/{taskId}/history:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Tasks]
+      operationId: getTaskHistory
+      summary: Stages (time spent per status) and activity events, oldest first
+      responses:
+        "200":
+          description: History
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/TaskHistory" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /workspaces/{workspaceId}/tasks/{taskId}/assignment-requests:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+      - $ref: "#/components/parameters/TaskId"
+    post:
+      tags: [Tasks]
+      operationId: requestAssignment
+      summary: "(Reserved — gap TD3) Ask the task's owners to be assigned"
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "202": { description: Request recorded }
+        "409": { $ref: "#/components/responses/Conflict" }
+
   /workspaces/{workspaceId}/tasks/{taskId}/checklist-items:
     parameters:
       - $ref: "#/components/parameters/WorkspaceId"
@@ -1171,6 +1205,50 @@ components:
           type: array
           items: { $ref: "#/components/schemas/LabelRef" }
         version: { type: integer }
+        permissions: { $ref: "#/components/schemas/TaskPermissions" }
+    TaskPermissions:
+      type: object
+      description: Computed for the caller. Default rule (gap TD8) — the task creator or a workspace OWNER can edit; every member can comment.
+      required: [canEdit, canComment]
+      properties:
+        canEdit: { type: boolean }
+        canComment: { type: boolean }
+    TaskStage:
+      type: object
+      required: [status, enteredAt, exitedAt, approximate]
+      properties:
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        enteredAt: { $ref: "#/components/schemas/Instant" }
+        exitedAt: { oneOf: [{ $ref: "#/components/schemas/Instant" }, { type: "null" }], description: null = current stage }
+        approximate: { type: boolean, description: "true when the stage started before history tracking existed" }
+    TaskEvent:
+      type: object
+      description: |
+        One activity entry. Type-specific fields:
+        - created: none
+        - subtask_added: subtaskTitle
+        - field_changed: field (title|description|priority|startDate|endDate|dueDate|status), from, to (wire values; dates as LocalDate)
+        Further types are reserved (gap TD4); clients must ignore unknown types.
+      required: [id, type, actor, createdAt]
+      properties:
+        id: { type: string }
+        type: { type: string, examples: [created, subtask_added, field_changed] }
+        actor: { $ref: "#/components/schemas/UserRef" }
+        createdAt: { $ref: "#/components/schemas/Instant" }
+        subtaskTitle: { type: string }
+        field: { type: string }
+        from: { type: [string, "null"] }
+        to: { type: [string, "null"] }
+    TaskHistory:
+      type: object
+      required: [stages, events]
+      properties:
+        stages:
+          type: array
+          items: { $ref: "#/components/schemas/TaskStage" }
+        events:
+          type: array
+          items: { $ref: "#/components/schemas/TaskEvent" }
     TaskCalendarItem:
       type: object
       description: Sparse task returned by view=calendar

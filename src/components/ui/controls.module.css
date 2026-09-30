@@ -104,6 +104,13 @@
   line-height: var(--line-height-tight);
 }
 
+.field:disabled {
+  background: var(--color-bg-disabled);
+  color: var(--color-text-disabled);
+  cursor: default;
+  opacity: 1;
+}
+
 .field::placeholder {
   color: var(--color-text-placeholder);
 }

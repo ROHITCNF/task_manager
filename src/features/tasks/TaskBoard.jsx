@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { TaskCard } from '../../components/domain/task.jsx';
 import { Button, ScrollArea } from '../../components/ui/index.js';
 import { STATUS_LABEL, TASK_STATUSES, currentTimeZone, todayLocal } from '../../domain/index.js';
@@ -20,7 +21,7 @@ function useEndOfList(rootRef, onVisible, enabled) {
   return sentinelRef;
 }
 
-function BoardColumn({ status, today, timeZone }) {
+function BoardColumn({ status, today, timeZone, onOpen, onStatusChange }) {
   const tasks = useTasks(selectColumnTasks(status));
   const count = useTasks((s) => s.counts[status]);
   const hasMore = useTasks((s) => Boolean(s.columns[status].nextCursor));
@@ -35,7 +36,9 @@ function BoardColumn({ status, today, timeZone }) {
         <span className={styles.columnCount}>{count}</span>
       </header>
       <ScrollArea ref={listRef} axis="y" className={styles.list}>
-        {tasks.map((task) => <TaskCard key={task.id} task={task} today={today} timeZone={timeZone} />)}
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} today={today} timeZone={timeZone} onOpen={onOpen} onStatusChange={onStatusChange} />
+        ))}
         {hasMore ? <div ref={sentinelRef} className={styles.sentinel} /> : null}
       </ScrollArea>
       <footer className={styles.columnFooter}>
@@ -50,6 +53,9 @@ function BoardColumn({ status, today, timeZone }) {
 export function TaskBoard() {
   const workspaceId = useWorkspace((s) => s.currentId);
   const loadBoard = useTasks((s) => s.loadBoard);
+  const changeStatus = useTasks((s) => s.changeStatus);
+  const navigate = useNavigate();
+  const onOpen = useCallback((task) => navigate(`/tasks/${task.id}`), [navigate]);
   const timeZone = currentTimeZone();
   const today = todayLocal(timeZone);
 
@@ -60,7 +66,7 @@ export function TaskBoard() {
   return (
     <ScrollArea axis="x" className={styles.board}>
       <div className={styles.columns}>
-        {TASK_STATUSES.map((status) => <BoardColumn key={status} status={status} today={today} timeZone={timeZone} />)}
+        {TASK_STATUSES.map((status) => <BoardColumn key={status} status={status} today={today} timeZone={timeZone} onOpen={onOpen} onStatusChange={changeStatus} />)}
       </div>
     </ScrollArea>
   );

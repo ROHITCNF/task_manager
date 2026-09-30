@@ -62,6 +62,7 @@ export const toTask = (dto) => freeze({
   clients: freeze((dto.clients ?? []).map(toClientRef)),
   labels: freeze((dto.labels ?? []).map(toLabel)),
   version: dto.version,
+  permissions: freeze({ canEdit: Boolean(dto.permissions?.canEdit), canComment: dto.permissions?.canComment !== false }),
 });
 
 export const toCalendarTask = (dto) => freeze({
@@ -94,6 +95,25 @@ export const toInboxItem = (dto) => freeze({
   actor: toUserRef(dto.actor),
   task: dto.task ? freeze({ id: dto.task.id, title: dto.task.title }) : null,
   excerpt: dto.excerpt ?? null,
+});
+
+export const toTaskHistory = (dto) => freeze({
+  stages: freeze(dto.stages.map((s) => freeze({
+    status: status(s.status),
+    enteredAt: toDate(s.enteredAt),
+    exitedAt: toDate(s.exitedAt),
+    approximate: Boolean(s.approximate),
+  }))),
+  events: freeze(dto.events.map((e) => freeze({
+    id: e.id,
+    type: e.type,
+    actor: toUserRef(e.actor),
+    createdAt: toDate(e.createdAt),
+    subtaskTitle: e.subtaskTitle,
+    field: e.field,
+    from: e.from ?? null,
+    to: e.to ?? null,
+  }))),
 });
 
 /** List envelope → Page. */

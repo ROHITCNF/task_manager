@@ -72,6 +72,10 @@
       "value": "26px",
       "seen": "Inbox All / Unread filter pills"
     },
+    "chip-height-lg": {
+      "value": "28px",
+      "seen": "task drawer Details / History tabs"
+    },
     "avatar-sm": {
       "value": "20px",
       "seen": "task card assignees"
@@ -79,6 +83,10 @@
     "avatar-md": {
       "value": "28px",
       "seen": "settings member list"
+    },
+    "avatar-xs": {
+      "value": "14px",
+      "seen": "task drawer member chips and created line"
     },
     "dot-sm": {
       "value": "6px",
@@ -112,6 +120,30 @@
       "value": "250px",
       "estimated": true,
       "seen": "No due date panel"
+    },
+    "drawer-width": {
+      "value": "433px",
+      "seen": "task detail drawer (1× capture)"
+    },
+    "description-height": {
+      "value": "90px",
+      "seen": "task drawer description box"
+    },
+    "card-status-select-width": {
+      "value": "128px",
+      "seen": "card hover status select"
+    },
+    "card-status-select-height": {
+      "value": "21px",
+      "seen": "card hover status select"
+    },
+    "timeline-bar-width": {
+      "value": "3px",
+      "seen": "task history stage bar"
+    },
+    "history-indent": {
+      "value": "40px",
+      "seen": "task history: stage pills and events indent"
     },
     "border-width": {
       "value": "1px"

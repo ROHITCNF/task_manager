@@ -12,6 +12,7 @@ const LoginPage = lazy(() => import('../pages/LoginPage.jsx'));
 const HomePage = lazy(() => import('../pages/HomePage.jsx'));
 const TasksPage = lazy(() => import('../pages/TasksPage.jsx'));
 const InboxPage = lazy(() => import('../pages/InboxPage.jsx'));
+const TaskDetailPage = lazy(() => import('../pages/TaskDetailPage.jsx'));
 const CalendarPage = lazy(() => import('../pages/CalendarPage.jsx'));
 const ClientsPage = lazy(() => import('../pages/ClientsPage.jsx'));
 const QuickCapturePage = lazy(() => import('../pages/QuickCapturePage.jsx'));
@@ -30,7 +31,7 @@ export const routes = [
         children: [
           { path: '/', element: <HomePage /> },
           { path: '/inbox', element: <InboxPage /> },
-          { path: '/tasks', element: <TasksPage /> },
+          { path: '/tasks', element: <TasksPage />, children: [{ path: ':taskId', element: <TaskDetailPage /> }] },
           { path: '/calendar', element: <CalendarPage /> },
           { path: '/docs', element: <Blank /> }, // deferred: gap S2
           { path: '/clients', element: <ClientsPage /> },

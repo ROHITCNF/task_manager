@@ -162,6 +162,39 @@ Reference: `inbox_light.png` (added 2026-09-30)
 6. Item rows are **not rendered** until their design has a reference (gap IN1).
 7. Matches reference.
 
+## US-13 — Card hover: quick status change
+
+**As** a user, **I want** to change a task's status from its card.
+Reference: `card-hover_light.png`
+
+1. Hovering over or focusing a card reveals a status select at the bottom-right of the avatar row, showing the current status.
+2. The select is disabled when the viewer cannot edit the task (`permissions.canEdit`), as in the reference.
+3. When enabled, choosing a status saves it (PATCH with `If-Match`) and the board reloads so the card moves column.
+4. Using the select does not open the drawer.
+
+## US-14 — Task detail drawer: Details
+
+**As** a user, **I want** to open a task and see all its details.
+Reference: `card_click_state_light.png`
+
+1. Clicking (or pressing Enter on) a card opens `/tasks/:taskId`: a 20% black scrim over the app and a right-side drawer.
+2. The header shows "Close" and the Details / History chips, with Details selected. Close, a scrim click, and Esc all return to `/tasks`.
+3. The created line shows "Created by <avatar> <name> on 23 Sept, 19:56".
+4. When the viewer cannot edit, the permission notice and the "Ask to be assigned" button are shown (the button is inert, gap TD3), and every field is disabled with the greyed look.
+5. The fields are title, description, assignee chips for **all members** (assigned ones filled), Status, Priority, Client, Start date, End date, and Due date ("Set due date" placeholder), then the "Subtasks" label.
+6. When the viewer can edit (not referenced, gap TD2), the same controls are enabled and each change is saved immediately with `If-Match`. The board refreshes afterwards.
+7. Matches the reference for the drawer region.
+
+## US-15 — Task detail drawer: History
+
+**As** a user, **I want** to see how a task moved through stages and who changed what.
+Reference: `card_click_state_history_light.png`
+
+1. Selecting "History" shows the title, the "Stages" label, and one pill per stage ("Backlog ~6d 18h · now").
+2. Each stage section has a status-coloured left bar, the stage name, "23 Sept, 19:56 → now · 6d 18h so far", and the approximate-stage note when applicable.
+3. Events are listed oldest first, with avatar, "<actor> <action>" and a timestamp: created this task · added subtask “X” · changed the <field> from A to B. Unknown event types are not rendered (gap TD4).
+4. Matches the reference for the drawer region.
+
 ## Deferred (need a reference first — see gaps.md)
 
-Docs (S2) · Task detail (S3) · New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).
+Docs (S2) · New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).

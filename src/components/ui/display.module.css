@@ -81,6 +81,12 @@
   object-fit: cover;
 }
 
+.avatar-xs {
+  width: var(--size-avatar-xs);
+  height: var(--size-avatar-xs);
+  font-size: var(--font-size-2xs);
+}
+
 .avatar-sm {
   width: var(--size-avatar-sm);
   height: var(--size-avatar-sm);

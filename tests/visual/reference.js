@@ -47,15 +47,16 @@ export async function settle(page) {
  * @param {import('@playwright/test').Page} page
  * @param {string} name reference file name
  * @param {{ mask?: import('@playwright/test').Locator[], region?: { x: number, y: number, width: number, height: number }, scale?: number, label?: string }} [opts]
- *   region: compare only this rectangle (CSS px); scale: device scale factor of the reference.
+ *   region: compare only this rectangle (CSS px); scale: device scale factor of the reference;
+ *   cropReference: false when the reference file is already a crop of that region.
  */
-export async function diffAgainstReference(page, name, { mask = [], region, scale = 2, label } = {}) {
+export async function diffAgainstReference(page, name, { mask = [], region, scale = 2, label, cropReference = true } = {}) {
   await settle(page);
   let reference = readReference(name);
   let actual = PNG.sync.read(await page.screenshot({ animations: 'disabled', caret: 'hide', mask, maskColor: '#ffffff' }));
   if (region) {
     const px = { x: Math.round(region.x * scale), y: Math.round(region.y * scale), width: Math.round(region.width * scale), height: Math.round(region.height * scale) };
-    reference = crop(reference, px);
+    if (cropReference) reference = crop(reference, px);
     actual = crop(actual, px);
   }
   if (actual.width !== reference.width || actual.height !== reference.height) {

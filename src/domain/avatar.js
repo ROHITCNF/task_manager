@@ -1,4 +1,4 @@
-const PALETTE_SIZE = 9;
+const PALETTE_SIZE = 14;
 
 /** First letter of the name, uppercased. */
 export const initialOf = (name) => (name.trim()[0] ?? '?').toUpperCase();
@@ -11,7 +11,7 @@ function hash(value) {
 }
 
 /**
- * Stable avatar background token for a user id: '--color-avatar-1' … '--color-avatar-9'.
+ * Stable avatar background token for a user id: '--color-avatar-1' … '--color-avatar-14'.
  * @param {string} userId
  */
 export const avatarToken = (userId) => `--color-avatar-${(hash(userId) % PALETTE_SIZE) + 1}`;

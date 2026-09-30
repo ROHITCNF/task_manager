@@ -34,6 +34,7 @@ function createTask(workspaceId, userId, input) {
     assigneeIds: input.assigneeIds ?? [],
     clientIds: input.clientIds ?? [],
     labelIds: input.labelIds ?? [],
+    events: [],
     version: 1,
   };
   db.state.tasks.push(task);
@@ -72,7 +73,7 @@ export const taskHandlers = [
     const view = url.searchParams.get('view') ?? 'card';
     const tasks = sortTasks(filterTasks(tasksOf(params.workspaceId), url, ctx.user.id), url.searchParams.get('sort') ?? 'position');
     const page = paginate(tasks, url);
-    return Response.json({ ...page, data: page.data.map((t) => db.taskDto(t, view)) });
+    return Response.json({ ...page, data: page.data.map((t) => db.taskDto(t, view, ctx.user.id)) });
   }),
 
   http.post(`${API}/workspaces/:workspaceId/tasks/bulk`, async ({ params, request }) => {
@@ -81,7 +82,7 @@ export const taskHandlers = [
     const { tasks = [] } = await request.json();
     if (!tasks.length || tasks.length > 100 || tasks.some((t) => !t.title?.trim())) return titleError();
     const created = tasks.map((input) => createTask(params.workspaceId, ctx.user.id, input));
-    return one(created.map((t) => db.taskDto(t, 'full')), 201);
+    return one(created.map((t) => db.taskDto(t, 'full', ctx.user.id)), 201);
   }),
 
   http.post(`${API}/workspaces/:workspaceId/tasks`, async ({ params, request }) => {
@@ -90,7 +91,7 @@ export const taskHandlers = [
     const input = await request.json();
     if (!input.title?.trim()) return titleError();
     const task = createTask(params.workspaceId, ctx.user.id, input);
-    return one(db.taskDto(task, 'full'), 201, { ETag: `"${task.version}"` });
+    return one(db.taskDto(task, 'full', ctx.user.id), 201, { ETag: `"${task.version}"` });
   }),
 
   http.get(`${API}/workspaces/:workspaceId/tasks/:taskId`, ({ params }) => {
@@ -98,7 +99,15 @@ export const taskHandlers = [
     if (ctx.response) return ctx.response;
     const task = tasksOf(params.workspaceId).find((t) => t.id === params.taskId);
     if (!task) return problem(404, 'not_found', 'Task not found');
-    return one(db.taskDto(task, 'full'), 200, { ETag: `"${task.version}"` });
+    return one(db.taskDto(task, 'full', ctx.user.id), 200, { ETag: `"${task.version}"` });
+  }),
+
+  http.get(`${API}/workspaces/:workspaceId/tasks/:taskId/history`, ({ params }) => {
+    const ctx = requireMember(params.workspaceId);
+    if (ctx.response) return ctx.response;
+    const task = tasksOf(params.workspaceId).find((t) => t.id === params.taskId);
+    if (!task) return problem(404, 'not_found', 'Task not found');
+    return one(db.historyDto(task));
   }),
 
   http.patch(`${API}/workspaces/:workspaceId/tasks/:taskId`, async ({ params, request }) => {
@@ -110,6 +119,7 @@ export const taskHandlers = [
     if (version === null) return problem(428, 'precondition_required', 'If-Match header required');
     if (version !== task.version) return problem(412, 'precondition_failed', 'Task was changed by someone else');
 
+    if (!db.permissionsFor(task, ctx.user.id).canEdit) return problem(403, 'forbidden', 'Only the creator or an owner can change this task');
     const patch = await request.json();
     const fields = ['title', 'description', 'priority', 'startDate', 'endDate', 'dueDate', 'assigneeIds', 'clientIds', 'labelIds'];
     for (const field of fields) if (field in patch) task[field] = patch[field];
@@ -119,7 +129,7 @@ export const taskHandlers = [
     }
     task.version += 1;
     task.updatedAt = new Date().toISOString();
-    return one(db.taskDto(task, 'full'), 200, { ETag: `"${task.version}"` });
+    return one(db.taskDto(task, 'full', ctx.user.id), 200, { ETag: `"${task.version}"` });
   }),
 
   http.delete(`${API}/workspaces/:workspaceId/tasks/:taskId`, ({ params, request }) => {
@@ -145,7 +155,7 @@ export const taskHandlers = [
     return one({
       today,
       stats: { myOpenTasks: mine.length, overdue: overdue.length, dueThisWeek: thisWeek.length, awaitingReview: 0, unreadInbox: 0 },
-      dueSoon: dueSoon.map((t) => db.taskDto(t, 'card')),
+      dueSoon: dueSoon.map((t) => db.taskDto(t, 'card', ctx.user.id)),
       awaitingReview: [],
     });
   }),

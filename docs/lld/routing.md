@@ -18,8 +18,9 @@ Uses `createBrowserRouter`. Pages are `React.lazy`.
 ```
 /login                → <PublicOnly>  → <PublicLayout>  → LoginPage
 /                     → <RequireAuth> → <AppShell>      → HomePage           (index)
-  /inbox                                                → BlankPage (deferred S1)
+  /inbox                                                → InboxPage
   /tasks                                                → TasksPage
+    :taskId                                             → TaskDetailPage (drawer via <Outlet/> inside the board screen)
   /calendar                                             → CalendarPage
   /docs                                                 → BlankPage (deferred S2)
   /clients                                              → ClientsPage

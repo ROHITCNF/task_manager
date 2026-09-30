@@ -11,7 +11,7 @@ export const user = (id, name) => Object.freeze({ id, name, avatarUrl: null });
 export const task = (id, status, extra = {}) => Object.freeze({
   id, title: `Task ${id}`, status, priority: 'none', startDate: null, endDate: null, dueDate: null, position: id,
   checklist: { done: 0, total: 0 }, commentCount: 0, createdBy: user('u1', 'N'), createdAt: new Date(), updatedAt: new Date(),
-  assignees: [], clients: [], labels: [], version: 1, ...extra,
+  assignees: [], clients: [], labels: [], version: 1, permissions: { canEdit: false, canComment: true }, ...extra,
 });
 
 /** A deferred promise, to control response ordering. */
@@ -58,6 +58,23 @@ export function fakeServices() {
         { id: 'e', title: 'E', status: 'todo', priority: 'none', dueDate: '2026-09-30' },
       ]),
       listWithoutDueDate: vi.fn(async () => [{ id: 'n', title: 'No due', status: 'backlog', priority: 'high', dueDate: null }]),
+      get: vi.fn(async (_ws, id) => task(id, 'backlog', {
+        title: 'Re: Intellicar Track Platform cleanup', description: 'CSM - NIRANJAN BALAJI.', priority: 'high',
+        startDate: '2026-09-23', endDate: '2026-09-28', createdAt: new Date('2026-09-23T14:26:00Z'),
+        createdBy: { ...user('u2', 'Anantha Krishnan T G'), avatarUrl: '/a.png' },
+        assignees: [{ ...user('u2', 'Anantha Krishnan T G'), avatarUrl: '/a.png' }],
+        clients: [{ id: 'c1', name: 'Aeidith', colour: '#4ca154' }],
+      })),
+      history: vi.fn(async () => ({
+        stages: [{ status: 'backlog', enteredAt: new Date('2026-09-23T14:26:00Z'), exitedAt: null, approximate: true }],
+        events: [
+          { id: 'e0', type: 'created', actor: user('u2', 'Anantha Krishnan T G'), createdAt: new Date('2026-09-23T14:26:00Z') },
+          { id: 'e1', type: 'subtask_added', actor: user('u2', 'Anantha Krishnan T G'), createdAt: new Date('2026-09-24T10:57:00Z'), subtaskTitle: 'test 1' },
+          { id: 'e2', type: 'field_changed', actor: user('u2', 'Anantha Krishnan T G'), createdAt: new Date('2026-09-25T06:51:00Z'), field: 'endDate', from: '2026-09-23', to: '2026-09-28' },
+          { id: 'e3', type: 'mystery', actor: user('u2', 'Anantha Krishnan T G'), createdAt: new Date('2026-09-26T06:51:00Z') },
+        ],
+      })),
+      update: vi.fn(async (_ws, t, patch) => ({ ...t, ...patch, version: t.version + 1 })),
     },
     labels: {
       list: vi.fn(async () => [{ id: 'l1', name: 'Firmware', colour: '#418faf' }]),

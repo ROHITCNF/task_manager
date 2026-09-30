@@ -18,7 +18,16 @@ const d = (day) => `2026-09-${String(day).padStart(2, '0')}`;
 /** Cards visible on the board, in column order (position order within each column). */
 const VISIBLE = [
   // Backlog (4 — all visible)
-  { title: 'Re: Intellicar Track Platform cleanup', status: 'backlog', priority: 'high', start: 23, end: 28, clients: ['Bounce'], by: 'anantha', created: 23, assignees: ['anantha'] },
+  {
+    title: 'Re: Intellicar Track Platform cleanup', status: 'backlog', priority: 'high', start: 23, end: 28, clients: ['Bounce'], by: 'anantha', created: 23, assignees: ['anantha'],
+    // card_click_state*_light.png: created 23 Sept 19:56 IST, description, and two later events.
+    createdAt: '2026-09-23T14:26:00Z',
+    description: 'CSM - NIRANJAN BALAJI.',
+    events: [
+      { type: 'subtask_added', by: 'anantha', at: '2026-09-24T10:57:00Z', subtaskTitle: 'test 1' },
+      { type: 'field_changed', by: 'anantha', at: '2026-09-25T06:51:00Z', field: 'endDate', from: '2026-09-23', to: '2026-09-28' },
+    ],
+  },
   { title: 'Bgauss_new vehicle_component FOTA', status: 'backlog', priority: 'medium', start: 23, end: 23, clients: ['BGauss'], by: 'anantha', created: 23, assignees: ['anantha'] },
   { title: 'Re: Callisto Microvolt Project _ Jupiter electric', status: 'backlog', priority: 'medium', start: 1, end: 14, comments: 1, clients: ['Jupiter Wagon Limited'], by: 'anantha', created: 22, assignees: ['anantha'] },
   { title: 'Re: ALVA Request for Quotation : IoT', status: 'backlog', priority: 'medium', start: 17, end: 17, due: 30, comments: 1, clients: ['Alva Auto'], by: 'neeraj', created: 17, assignees: ['anantha'] },
@@ -118,11 +127,11 @@ export function buildTasks() {
   const positionCounter = Object.fromEntries(STATUS_ORDER.map((s) => [s, 0]));
   return ALL.map((spec, i) => {
     positionCounter[spec.status] += 1;
-    const createdAt = `${d(spec.created)}T05:00:00Z`;
+    const createdAt = spec.createdAt ?? `${d(spec.created)}T05:00:00Z`;
     return {
       id: `tsk_01J8Z${String(i + 1).padStart(4, '0')}0000000000000000000`.slice(0, 30),
       title: spec.title,
-      description: null,
+      description: spec.description ?? null,
       status: spec.status,
       priority: spec.priority,
       startDate: spec.start ? d(spec.start) : null,
@@ -137,6 +146,7 @@ export function buildTasks() {
       assigneeKeys: [...(spec.assignees ?? [])],
       clientNames: [...(spec.clients ?? [])],
       labelIds: [],
+      events: (spec.events ?? []).map(({ by, at, ...rest }) => ({ ...rest, byKey: by, createdAt: at })),
       version: 1,
     };
   });

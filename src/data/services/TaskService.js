@@ -1,4 +1,4 @@
-import { fromTaskDraft, toCalendarTask, toPage, toTask, toTaskQuery, toTaskStats } from '../mappers/index.js';
+import { fromTaskDraft, toCalendarTask, toPage, toTask, toTaskHistory, toTaskQuery, toTaskStats } from '../mappers/index.js';
 
 /**
  * @typedef {{ status?: string[], statusGroup?: 'open'|'closed', assigneeId?: string[], unassigned?: boolean,
@@ -34,6 +34,17 @@ export class TaskService {
   async stats(wsId, groupBy, query = {}) {
     const body = await this.taskApi.stats(wsId, { groupBy, ...toTaskQuery(query) });
     return toTaskStats(body.data);
+  }
+
+  /** Full view (description, permissions). */
+  async get(wsId, taskId) {
+    const body = await this.taskApi.get(wsId, taskId);
+    return toTask(body.data);
+  }
+
+  async history(wsId, taskId) {
+    const body = await this.taskApi.history(wsId, taskId);
+    return toTaskHistory(body.data);
   }
 
   /** Sends task.version as If-Match. */

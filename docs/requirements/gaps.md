@@ -11,6 +11,7 @@ Suggested capture method: take a screenshot from the existing app for each item,
 | Gap | Decision |
 |---|---|
 | S2, S3, S4, S6, S7, S8, S9, S10 | **Deferred.** Phase 1 builds only the referenced screens. Controls that lead to these screens render as in the reference but are **inert**. The Docs route shows the shell with an empty main area. |
+| S3 | **Covered** by `card_click_state_light.png` and `card_click_state_history_light.png`: a right-side drawer over the board. The remaining gaps are TD1–TD7. |
 | S1 | **Covered (empty state)** by `inbox_light.png`, added 2026-09-30. The remaining Inbox gaps are IN1–IN5 below. |
 | C1 | **Fix.** Use an equal 7-column grid aligned with the weekday headers, with titles truncated by an ellipsis. |
 | T1 | **Deferred.** The toggle and theme plumbing are built; the dark palette stays empty. |
@@ -31,7 +32,7 @@ Unlisted gaps are still open.
 |---|---|---|---|
 | S1 | ~~Inbox~~ **Covered** by `inbox_light.png` (empty state only). See IN1–IN5. | — |
 | S2 | **Docs** | In the nav; clients show "N docs" counts | P0 |
-| S3 | **Task detail** (view/edit) | Opened by every task card and calendar entry. Should show fields, checklist, comments, change requests, activity. | P0 |
+| S3 | ~~Task detail~~ **Covered** (drawer). See TD1–TD7. | — |
 | S4 | **New task form** | From "+ New task" and "+ Add task". Modal or page? Which fields are required? | P0 |
 | S5 | ~~Login~~ **Covered** by `login_light.png` (Google-only sign-in). The remaining auth gaps are listed in the Login table under §3. | — |
 | S6 | **Quick Capture draft review** | The step after "Split into tasks": the editable draft list and the create action | P0 |
@@ -72,6 +73,18 @@ Unlisted gaps are still open.
 | L6 | Login screen in dark theme (card glow in dark) | P2 |
 | L7 | Button hover/focus state | P2 |
 
+### Task detail drawer
+| # | State | Pri |
+|---|---|---|
+| TD1 | Everything below "Subtasks" (subtask list, comments — the notice says "You can still comment") | P0 |
+| TD2 | Editable appearance (enabled fields) for creators and owners; save behaviour (on change? explicit Save?) | P0 |
+| TD3 | What "Ask to be assigned" does, and its confirmation state | P1 |
+| TD4 | History event types beyond created / added subtask / changed end date (status, priority, assignees, comments…) and their copy | P1 |
+| TD5 | Stage colours for statuses other than Backlog (grey) | P1 |
+| TD6 | The Client select when a task has several clients or none (the drawer shows a single select) | P1 |
+| TD7 | Does a card click on the calendar or the Home "Due soon" panel open the same drawer? | P2 |
+| TD8 | Who counts as an "owner" (workspace OWNER role?). Default: the task creator or a workspace OWNER can edit. | P1 |
+
 ### Inbox
 | # | State | Pri |
 |---|---|---|
@@ -99,7 +112,7 @@ Unlisted gaps are still open.
 | B3 | Search with results and with **no results** | P1 |
 | B4 | Open state and options for each filter dropdown: Everyone, All labels, All clients | P1 |
 | B5 | Inline "+ Add task" input state | P1 |
-| B6 | Card hover/selected state | P1 |
+| B6 | ~~Card hover~~ **Covered** by `card-hover_light.png` (status select appears). The selected-card state is still open. | P2 |
 | B7 | **Labels**: the "All labels" filter exists but no label appears on any card. What is a label, and how does it render? | P1 |
 | B8 | Card with 3+ assignees (overflow "+N"?) | P2 |
 | B9 | Card with a checklist completed (e.g. 2/2) — is it styled differently? | P2 |

@@ -74,6 +74,10 @@ describe('mock responses match openapi.yaml', () => {
     expect(created.status).toBe(201);
     expectValid(envelope('Task'), created.body);
 
+    const [first] = (await call('GET', `/workspaces/${WS}/tasks?status=backlog&limit=1`)).body.data;
+    expectValid(envelope('Task'), (await call('GET', `/workspaces/${WS}/tasks/${first.id}`)).body);
+    expectValid(envelope('TaskHistory'), (await call('GET', `/workspaces/${WS}/tasks/${first.id}/history`)).body);
+
     const split = await call('POST', `/workspaces/${WS}/quick-capture/split`, { text: '- a\n- b', source: 'meeting' });
     expect(split.body.data.drafts).toEqual([{ title: 'a' }, { title: 'b' }]);
   });

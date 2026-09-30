@@ -1,6 +1,6 @@
 # Screen Inventory
 
-Source: the eight screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login and inbox screens are smaller captures at 1× scale (about 1905 px wide).
+Source: the eleven screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login and inbox screens are smaller captures at 1× scale (about 1905 px wide).
 
 | Screen | File |
 |---|---|
@@ -12,6 +12,9 @@ Source: the eight screenshots in `docs/design/reference/`. All are light theme a
 | Settings | `settings_light.png` |
 | Login | `login_light.png` |
 | Inbox | `inbox_light.png` |
+| Task card hover (crop) | `card-hover_light.png` |
+| Task detail drawer — Details | `card_click_state_light.png` |
+| Task detail drawer — History | `card_click_state_history_light.png` |
 
 Legend: **Observed** means visible in a screenshot. **Inferred** means the likely behaviour, which is not confirmed. Every inferred item needs sign-off and is tracked in `gaps.md`.
 
@@ -436,7 +439,78 @@ Captured at 1× scale, 1905×929. Only the **empty state** is shown.
 
 ---
 
-## 9. Shared components
+## 9. Task card hover (`card-hover_light.png`)
+
+A 332×222 crop at 1× scale showing the first Backlog card while the pointer is over it.
+
+- The card gains a **status select** at the bottom-right, on the same row as the avatars: 128×21 px, showing "Backlog".
+- In the reference the select is **greyed** (text `#a5a5a5`) because the viewer (Rohit) cannot edit this task (see §10, permissions).
+- Inferred: changing it moves the card to another column (a status PATCH).
+
+## 10. Task detail drawer (`card_click_state_light.png`, `card_click_state_history_light.png`)
+
+Opened by clicking a task card. Both captures are at 1× scale (1896×942 and 1907×928). **This resolves gap S3: task detail is a right-side drawer over the board, not a page.**
+
+### Layout regions
+
+1. **Scrim:** 20% black over the whole app, sidebar included (white becomes `#ccc`).
+2. **Drawer:** about 433 px wide, full height, white, fixed to the right edge. Content padding is 24 px on the left and 20 px on the right. It scrolls vertically: the Details tab continues below the fold at "Subtasks".
+
+### Common header (both tabs)
+
+| Component | Observed details |
+|---|---|
+| Close | Text button, top-left, muted (`#7f7f7f`), 13 px |
+| Tabs | "Details" / "History" chips at the top-right, 28 px tall. Selected = filled primary, default = outlined (same style as the Inbox filter chips). |
+
+### Details tab (`card_click_state_light.png`)
+
+| Component | Observed details |
+|---|---|
+| Created line | 14 px avatar + "Created by Anantha Krishnan T G on 23 Sept, 19:56" (muted `#999`, 12 px) |
+| Permission notice | Bordered, rounded box: "Only the task's creator and owners can change it. You can still comment." (`#4b4b4b`, 12 px, 2 lines) + secondary button "Ask to be assigned" |
+| Title | "Re: Intellicar Track Platform cleanup" (bold, about 18 px) |
+| Description | Bordered box, 90 px tall, containing the description ("CSM - NIRANJAN BALAJI.") |
+| Assignees | Label + a wrap of **chips, one per workspace member** (14 px avatar + name, 12 px, 26 px tall). Assigned members' chips are filled primary with white text (Anantha). |
+| Status | Label + full-width select ("Backlog") |
+| Priority · Client | Two equal columns of label + select ("High", "Bounce") |
+| Start date · End date | Two columns of label + input showing "23 Sept 2026" / "28 Sept 2026" |
+| Due date | Label + input with the placeholder "Set due date" |
+| Subtasks | Label only: the section is cut off at the fold (gap TD1) |
+
+- **Read-only state:** the viewer is neither the creator nor an owner, so every field is disabled. Disabled selects have background `#fbfbfb` and text `#a4a4a4`; disabled inputs have background `#fafafa` and text `#7d7d7d`.
+- **Labels** are muted (`#999`, 12 px). The gap from a label to its control is 8 px, and from one control to the next label 16 px.
+- **Members:** the chip list shows 24 members. It includes 10 not visible in `settings_light.png` (that list was cut off): Anusha P, Karan Aneja, Saksham Tulani, Joseph MJ, Rohit Srivastava, Bikky K S, Balapriya Priya, Ayush Mhaskar, Kriti Anand, and Debnath Mondal.
+- **Avatar palette:** these chips reveal 5 more initial-avatar colours (blue-grey, deep purple, crimson, brown, teal-green), so the palette is extended from 9 to 14.
+
+### History tab (`card_click_state_history_light.png`)
+
+| Component | Observed details |
+|---|---|
+| Title | Task title (bold, about 18 px). There is no created line or notice on this tab. |
+| Stages | Muted label, then an indented row of **stage pills**: outlined pill with the status dot, status name, and muted duration ("Backlog ~6d 18h · now") |
+| Stage section | 3 px left bar in the status colour (grey `#9ca3ae` for Backlog). Contents: status name (bold), the muted range "23 Sept, 19:56 → now · 6d 18h so far", and the muted note "Status changes before history tracking started weren't recorded, so this stage is approximate." |
+| Events | Indented list: 20 px avatar, "<actor> <action>" (14 px), and the time below it (muted, 11 px): "created this task" · "added subtask “test 1”" · "changed the end date from 23 Sept 2026 to 28 Sept 2026" |
+
+### Interactive elements (inferred unless noted)
+
+| Element | Behaviour |
+|---|---|
+| Task card click | Opens the drawer (observed: clicked-card state) |
+| Close, scrim click, Esc | Close the drawer (Close is observed; the scrim and Esc are standard) |
+| Details / History | Switch tabs (observed) |
+| Ask to be assigned | Requests assignment from the task's owner. The outcome is not shown (gap TD3). |
+| Fields (when editable) | Save on change. The editable appearance is not shown (gap TD2). |
+
+### Data
+
+- A full task (with description), `permissions.canEdit`, the workspace members, and clients.
+- History: `stages[] { status, enteredAt, exitedAt|null, approximate }`, `events[] { type, actor, createdAt, … }`.
+- Formats: "23 Sept, 19:56" (date and time), "23 Sept 2026" (date with year), and durations like "6d 18h".
+
+---
+
+## 11. Shared components
 
 | Component | Used on | Notes |
 |---|---|---|
@@ -447,7 +521,10 @@ Captured at 1× scale, 1905×929. Only the **empty state** is shown.
 | Page intro (title + muted subtitle/description) | Home, Quick Capture, Settings | Centred column layout |
 | Button: primary | Tasks, Clients, Quick Capture, Settings, Login | Enabled and disabled; "+ label" prefix pattern; full-width variant on Login |
 | Button: secondary/outline | Calendar (Today), Settings (Join), Inbox | Inbox adds a disabled secondary variant and a compact 27 px size |
-| Filter pill (toggle) | Inbox | Selected = filled primary; default = outlined |
+| Filter pill (toggle) | Inbox, task drawer tabs | Selected = filled primary; default = outlined |
+| Member chip | Task drawer | 14 px avatar + name; assigned = filled primary |
+| Drawer + scrim | Task detail | Right panel over a 20% black scrim |
+| Form field (label + control) | Task drawer | Muted label; disabled look when read-only |
 | Button: text/ghost | Tasks ("+ Add task"), sidebar ("Sign out") | |
 | Icon button | Calendar (‹ ›) | |
 | Text input | Tasks (search), Settings (×2) | Placeholder style |

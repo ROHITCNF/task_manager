@@ -150,6 +150,23 @@ export function createTasksStore(services, deps /* { getWorkspaceId, getTz } */)
 |---|---|
 | `selectHasUnread` | Whether any loaded item is unread (drives the disabled state of "Mark all as read") |
 
+### `taskDetailStore` (US-14/15)
+| State | Type |
+|---|---|
+| `taskId` | `string\|null` |
+| `task` | `Task\|null` (full view, with `permissions`) |
+| `history` | `TaskHistory\|null` (loaded on the History tab) |
+| `req`, `historyReq`, `saveReq` | `Req` |
+
+| Action | Behaviour |
+|---|---|
+| `open(id)` | Loads the full task |
+| `close()` | Clears the state |
+| `loadHistory()` | Loads the history |
+| `save(patch)` | PATCH with `If-Match` → replaces `task` → calls the injected `onTaskChanged` (the board reloads) |
+
+The tasks store also gains `changeStatus(task, status)` for the card-hover select (US-13).
+
 ### `uiStore`
 | State | Type |
 |---|---|
