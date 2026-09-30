@@ -72,6 +72,7 @@ Content-Type: application/problem+json
 | Quick Capture | `POST …/quick-capture/split` (the draft UI is deferred) → `POST …/tasks/bulk` (future) |
 | Settings | `GET …/members` · `POST /workspaces` · `POST /workspaces/join` |
 | Inbox | `GET …/inbox?unread=` · `POST …/inbox/read-all` |
+| Docs | `GET …/docs` (last updated first). Create (`POST …/docs`) and upload (`POST …/docs/uploads`) are reserved (gaps DC2, DC3). |
 | Task drawer | `GET …/tasks/{id}` (full view, with `permissions`) · `GET …/members` · `GET …/clients` · on the History tab: `GET …/tasks/{id}/history` · saves: `PATCH …/tasks/{id}` with `If-Match` |
 | Card hover | `PATCH …/tasks/{id}` `{ status }` with `If-Match` |
 

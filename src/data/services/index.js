@@ -1,4 +1,4 @@
-import { toClient, toDashboard, toInboxItem, toLabel, toPage } from '../mappers/index.js';
+import { toClient, toDashboard, toDoc, toInboxItem, toLabel, toPage } from '../mappers/index.js';
 
 export { AuthService } from './AuthService.js';
 export { WorkspaceService } from './WorkspaceService.js';
@@ -30,6 +30,15 @@ export class LabelService {
   async list(wsId) {
     const body = await this.labelApi.list(wsId);
     return body.data.map(toLabel);
+  }
+}
+
+export class DocService {
+  /** @param {import('../api/index.js').DocApi} docApi */
+  constructor(docApi) { this.docApi = docApi; }
+
+  async list(wsId, { clientId, cursor, limit } = {}) {
+    return toPage(await this.docApi.list(wsId, { clientId, cursor, limit }), toDoc);
   }
 }
 

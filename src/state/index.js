@@ -3,7 +3,7 @@ export { createWorkspaceStore, selectCurrentWorkspace, CURRENT_WORKSPACE_KEY } f
 export { createTasksStore } from './tasksStore.js';
 export { createTaskDetailStore } from './taskDetailStore.js';
 export {
-  createCalendarStore, createClientsStore, createDashboardStore, createInboxStore, createQuickCaptureStore, createUiStore,
+  createCalendarStore, createClientsStore, createDashboardStore, createDocsStore, createInboxStore, createQuickCaptureStore, createUiStore,
   selectHasUnread, THEME_KEY,
 } from './otherStores.js';
 export * from './selectors.js';

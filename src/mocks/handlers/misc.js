@@ -79,6 +79,17 @@ export const miscHandlers = [
   http.get(`${API}/workspaces/:workspaceId/inbox`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
   http.post(`${API}/workspaces/:workspaceId/inbox/read-all`, ({ params }) => requireMember(params.workspaceId).response ?? new HttpResponse(null, { status: 204 })),
   http.post(`${API}/workspaces/:workspaceId/inbox/:itemId/read`, ({ params }) => requireMember(params.workspaceId).response ?? new HttpResponse(null, { status: 204 })),
-  http.get(`${API}/workspaces/:workspaceId/docs`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
+  // ── docs (US-16) ──
+  http.get(`${API}/workspaces/:workspaceId/docs`, ({ params, request }) => {
+    const ctx = requireMember(params.workspaceId);
+    if (ctx.response) return ctx.response;
+    const url = new URL(request.url);
+    const clientIds = (url.searchParams.get('clientId') ?? '').split(',').filter(Boolean);
+    const docs = db.state.docs
+      .filter((d) => d.workspaceId === params.workspaceId && (!clientIds.length || clientIds.includes(d.clientId)))
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .map((d) => db.docDto(d));
+    return Response.json(paginate(docs, url));
+  }),
   http.get(`${API}/workspaces/:workspaceId/change-requests`, ({ params, request }) => requireMember(params.workspaceId).response ?? emptyPage(request)),
 ];

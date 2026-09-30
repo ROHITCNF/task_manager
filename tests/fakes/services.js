@@ -87,6 +87,12 @@ export function fakeServices() {
         ? { items: [{ id: 'c2', name: 'Bounce' }], nextCursor: null }
         : { items: [{ id: 'c1', name: 'Aeidith' }], nextCursor: 'p2' })),
     },
+    docs: {
+      list: vi.fn(async () => ({
+        items: ['Untitled', 'image (1)', 'Test1'].map((title, i) => ({ id: `d${i}`, title, client: null, updatedAt: new Date() })),
+        nextCursor: null,
+      })),
+    },
     inbox: {
       list: vi.fn(async () => ({ items: [], nextCursor: null })),
       markAllRead: vi.fn(async () => {}),

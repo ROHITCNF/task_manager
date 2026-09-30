@@ -138,6 +138,41 @@ export function createQuickCaptureStore({ quickCapture }, deps) {
   }));
 }
 
+const DOCS_PAGE = 50;
+
+/**
+ * Docs list (US-16).
+ * @param {{ docs: import('../data/services/index.js').DocService }} services
+ * @param {{ getWorkspaceId: () => string|null, onUnauthenticated?: () => void }} deps
+ */
+export function createDocsStore({ docs }, deps) {
+  const tracker = createRequestTracker();
+  const initial = () => ({ items: [], nextCursor: null, req: IDLE });
+
+  return createStore((set, get) => ({
+    ...initial(),
+
+    async load({ more = false } = {}) {
+      const wsId = deps.getWorkspaceId();
+      const { nextCursor, req } = get();
+      if (!wsId || (more && (!nextCursor || req.status === 'loading'))) return;
+      const isCurrent = tracker.start('docs');
+      set({ req: LOADING });
+      try {
+        const page = await docs.list(wsId, { cursor: more ? nextCursor : undefined, limit: DOCS_PAGE });
+        if (!isCurrent()) return;
+        set((s) => ({ items: more ? [...s.items, ...page.items] : page.items, nextCursor: page.nextCursor, req: SUCCESS }));
+      } catch (error) {
+        if (isCurrent()) set({ req: toFailure(error, deps) });
+      }
+    },
+
+    loadMore() { return get().load({ more: true }); },
+
+    reset() { tracker.invalidateAll(); set(initial()); },
+  }));
+}
+
 const INBOX_PAGE = 50;
 
 /**

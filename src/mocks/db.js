@@ -3,7 +3,7 @@
  * Must not import client code (ADR-0006).
  */
 import { USERS, WORKSPACES, DMT_WORKSPACE_ID, DMT_MEMBERS, INVITES, MOCK_LOGIN_USER_KEY } from './fixtures/people.js';
-import { CLIENTS, LABELS } from './fixtures/clients.js';
+import { CLIENTS, DOCS, LABELS } from './fixtures/clients.js';
 import { buildTasks } from './fixtures/tasks.js';
 
 const SESSION_KEY = 'dmt.mock.session';
@@ -29,6 +29,7 @@ function initialState() {
     memberships: DMT_MEMBERS.map((m) => ({ workspaceId: DMT_WORKSPACE_ID, userId: USERS[m.userKey].id, role: m.role, joinedAt: m.joinedAt })),
     clients: CLIENTS.map(({ key: _key, ...c }) => ({ ...c, workspaceId: DMT_WORKSPACE_ID })),
     labels: LABELS.map((l) => ({ ...l, workspaceId: DMT_WORKSPACE_ID })),
+    docs: DOCS.map((d) => ({ ...d, workspaceId: DMT_WORKSPACE_ID })),
     tasks,
     invites: clone(INVITES),
     sessionUserId: null,
@@ -131,9 +132,13 @@ export const db = {
       events: [created, ...events],
     };
   },
+  docDto(doc) {
+    return { id: doc.id, title: doc.title, client: doc.clientId ? this.clientRef(doc.clientId) : null, updatedAt: doc.updatedAt };
+  },
   clientDto(client) {
     const taskCount = this.state.tasks.filter((t) => t.clientIds.includes(client.id)).length;
-    return { id: client.id, name: client.name, colour: client.colour, taskCount, docCount: client.docCount, version: client.version, createdAt: client.createdAt };
+    const docCount = this.state.docs.filter((d) => d.clientId === client.id).length;
+    return { id: client.id, name: client.name, colour: client.colour, taskCount, docCount, version: client.version, createdAt: client.createdAt };
   },
   memberDto(membership) {
     const u = this.state.users[membership.userId];

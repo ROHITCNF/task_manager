@@ -99,6 +99,10 @@
     "client-row-height": {
       "value": "44px"
     },
+    "list-row-height": {
+      "value": "40px",
+      "seen": "Docs list rows (docs_light.png, 1×)"
+    },
     "stat-card-height": {
       "value": "119px"
     },

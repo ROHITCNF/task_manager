@@ -167,6 +167,17 @@ export function createTasksStore(services, deps /* { getWorkspaceId, getTz } */)
 
 The tasks store also gains `changeStatus(task, status)` for the card-hover select (US-13).
 
+### `docsStore` (US-16)
+| State | Type |
+|---|---|
+| `items` | `Doc[]` |
+| `nextCursor` | `string\|null` |
+| `req` | `Req` |
+
+| Action |
+|---|
+| `load({ more })`, `loadMore()`, `reset()` |
+
 ### `uiStore`
 | State | Type |
 |---|---|
@@ -178,7 +189,7 @@ The tasks store also gains `changeStatus(task, status)` for the card-hover selec
 
 ## 3. Reset rules
 
-- **Switching workspace** resets tasks, calendar, clients, dashboard, inbox, members, and quickCapture.
+- **Switching workspace** resets tasks, calendar, clients, dashboard, inbox, docs, members, and quickCapture.
 - **Signing out** resets everything except `ui`.
 
 ## 4. Error handling

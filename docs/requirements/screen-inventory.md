@@ -1,6 +1,6 @@
 # Screen Inventory
 
-Source: the eleven screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login and inbox screens are smaller captures at 1× scale (about 1905 px wide).
+Source: the twelve screenshots in `docs/design/reference/`. All are light theme and desktop. The app screens are roughly 3440×1900 px and were captured on Wednesday 30 September 2026. The login and inbox screens are smaller captures at 1× scale (about 1905 px wide).
 
 | Screen | File |
 |---|---|
@@ -15,6 +15,7 @@ Source: the eleven screenshots in `docs/design/reference/`. All are light theme 
 | Task card hover (crop) | `card-hover_light.png` |
 | Task detail drawer — Details | `card_click_state_light.png` |
 | Task detail drawer — History | `card_click_state_history_light.png` |
+| Docs | `docs_light.png` |
 
 Legend: **Observed** means visible in a screenshot. **Inferred** means the likely behaviour, which is not confirmed. Every inferred item needs sign-off and is tracked in `gaps.md`.
 
@@ -510,7 +511,40 @@ Opened by clicking a task card. Both captures are at 1× scale (1896×942 and 19
 
 ---
 
-## 11. Shared components
+## 11. Docs (`docs_light.png`)
+
+A 1906×939 capture at 1× scale.
+
+### Layout regions
+
+1. Header row: no bottom border. "Docs" on the left, two buttons on the right. Both are vertically centred at about 31 px.
+2. A list of document titles: plain rows, 40 px apart, with no borders, icons, or meta.
+
+### Components
+
+| Component | Observed details |
+|---|---|
+| Page title | "Docs" (18 px, semibold). Left padding 24 px. |
+| Button: secondary | "Upload document", 34 px tall |
+| Button: primary | "+ New doc", 34 px tall. There is an 8 px gap between the buttons and 16 px of right padding. |
+| Doc row | Title only (14 px, `#171717`). The text is inset 8 px within the row. Rows seen: Untitled, Untitled, Untitled, Untitled, Untitled, image (1), Untitled, Test1, test5. |
+
+### Interactive elements (inferred)
+
+| Element | Likely behaviour |
+|---|---|
+| Doc row | Opens the document. **The doc view is not shown** (gap DC1). |
+| + New doc | Creates a blank "Untitled" doc and opens it (gap DC2) |
+| Upload document | File picker, then upload. "image (1)" looks like an uploaded file (gaps DC3, DC5). |
+
+### Data
+
+- `Doc { id, title, client|null, updatedAt }` (the contract already has this). The order is presumably most recently updated first (gap DC6).
+- Clients show "0 docs" everywhere, so these docs are not linked to clients.
+
+---
+
+## 12. Shared components
 
 | Component | Used on | Notes |
 |---|---|---|

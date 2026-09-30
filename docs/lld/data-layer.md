@@ -117,6 +117,7 @@ A gateway is a thin class per resource. It returns **raw DTOs** (wire format), a
 | `ClientApi` | `list(wsId, { q, limit, cursor })`, `create(wsId, dto)`, `update(wsId, id, patch, version)`, `remove(wsId, id, version)` |
 | `LabelApi` | `list(wsId)` |
 | `QuickCaptureApi` | `split(wsId, text, source)` |
+| `DocApi` | `list(wsId, { clientId, limit, cursor })` |
 | `InboxApi` | `list(wsId, { unread, limit, cursor })`, `markRead(wsId, itemId)`, `readAll(wsId)` |
 
 Each constructor takes `(http: HttpClient)`.

@@ -820,7 +820,7 @@ paths:
     get:
       tags: [Docs]
       operationId: listDocs
-      summary: "(Future UI) Documents, optionally filtered by client"
+      summary: Documents, most recently updated first, optionally filtered by client
       parameters:
         - $ref: "#/components/parameters/ClientFilter"
         - $ref: "#/components/parameters/Limit"
@@ -838,6 +838,56 @@ paths:
                     type: array
                     items: { $ref: "#/components/schemas/Doc" }
                   meta: { $ref: "#/components/schemas/CursorMeta" }
+    post:
+      tags: [Docs]
+      operationId: createDoc
+      summary: "(Reserved — gap DC2) Create a written doc"
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string, maxLength: 200, default: Untitled }
+                clientId: { oneOf: [{ $ref: "#/components/schemas/ClientId" }, { type: "null" }] }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Doc" }
+
+  /workspaces/{workspaceId}/docs/uploads:
+    parameters:
+      - $ref: "#/components/parameters/WorkspaceId"
+    post:
+      tags: [Docs]
+      operationId: uploadDoc
+      summary: "(Reserved — gap DC3) Upload a file as a doc"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201":
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Doc" }
 
   # ───────────────────────────── Change requests (future UI, provisional) ─────────────────────────────
   /workspaces/{workspaceId}/change-requests:

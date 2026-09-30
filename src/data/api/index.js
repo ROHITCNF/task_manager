@@ -75,6 +75,13 @@ export class LabelApi {
   async list(wsId) { return (await this.http.get(`${ws(wsId)}/labels`)).body; }
 }
 
+export class DocApi {
+  constructor(http) { this.http = http; }
+  async list(wsId, { clientId, limit, cursor } = {}) {
+    return (await this.http.get(`${ws(wsId)}/docs`, { query: { clientId, limit, cursor } })).body;
+  }
+}
+
 export class InboxApi {
   constructor(http) { this.http = http; }
   async list(wsId, { unread, limit, cursor } = {}) {

@@ -22,7 +22,7 @@ Uses `createBrowserRouter`. Pages are `React.lazy`.
   /tasks                                                → TasksPage
     :taskId                                             → TaskDetailPage (drawer via <Outlet/> inside the board screen)
   /calendar                                             → CalendarPage
-  /docs                                                 → BlankPage (deferred S2)
+  /docs                                                 → DocsPage
   /clients                                              → ClientsPage
   /quick-capture                                        → QuickCapturePage
   /settings                                             → SettingsPage

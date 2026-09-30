@@ -87,6 +87,13 @@ export const toDashboard = (dto) => freeze({
   awaitingReview: freeze([...(dto.awaitingReview ?? [])]),
 });
 
+export const toDoc = (dto) => freeze({
+  id: dto.id,
+  title: dto.title,
+  client: dto.client ? toClientRef(dto.client) : null,
+  updatedAt: toDate(dto.updatedAt),
+});
+
 export const toInboxItem = (dto) => freeze({
   id: dto.id,
   kind: dto.kind,

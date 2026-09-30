@@ -69,6 +69,7 @@ describe('mock responses match openapi.yaml', () => {
     expectValid(envelope('Dashboard'), (await call('GET', `/workspaces/${WS}/dashboard?tz=Asia/Kolkata`)).body);
     expectValid(envelope('Client', { list: true }), (await call('GET', `/workspaces/${WS}/clients?limit=200`)).body);
     expectValid(envelope('Label', { list: true, paged: false }), (await call('GET', `/workspaces/${WS}/labels`)).body);
+    expectValid(envelope('Doc', { list: true }), (await call('GET', `/workspaces/${WS}/docs`)).body);
 
     const created = await call('POST', `/workspaces/${WS}/tasks`, { title: 'New one', dueDate: '2026-10-02' });
     expect(created.status).toBe(201);

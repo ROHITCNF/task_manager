@@ -11,6 +11,7 @@ Suggested capture method: take a screenshot from the existing app for each item,
 | Gap | Decision |
 |---|---|
 | S2, S3, S4, S6, S7, S8, S9, S10 | **Deferred.** Phase 1 builds only the referenced screens. Controls that lead to these screens render as in the reference but are **inert**. The Docs route shows the shell with an empty main area. |
+| S2 | **Covered (list)** by `docs_light.png`. The remaining Docs gaps are DC1–DC6. |
 | S3 | **Covered** by `card_click_state_light.png` and `card_click_state_history_light.png`: a right-side drawer over the board. The remaining gaps are TD1–TD7. |
 | S1 | **Covered (empty state)** by `inbox_light.png`, added 2026-09-30. The remaining Inbox gaps are IN1–IN5 below. |
 | C1 | **Fix.** Use an equal 7-column grid aligned with the weekday headers, with titles truncated by an ellipsis. |
@@ -31,7 +32,7 @@ Unlisted gaps are still open.
 | # | Screen | Why it's needed | Pri |
 |---|---|---|---|
 | S1 | ~~Inbox~~ **Covered** by `inbox_light.png` (empty state only). See IN1–IN5. | — |
-| S2 | **Docs** | In the nav; clients show "N docs" counts | P0 |
+| S2 | ~~Docs~~ **Covered** (list only). See DC1–DC6. | — |
 | S3 | ~~Task detail~~ **Covered** (drawer). See TD1–TD7. | — |
 | S4 | **New task form** | From "+ New task" and "+ Add task". Modal or page? Which fields are required? | P0 |
 | S5 | ~~Login~~ **Covered** by `login_light.png` (Google-only sign-in). The remaining auth gaps are listed in the Login table under §3. | — |
@@ -84,6 +85,16 @@ Unlisted gaps are still open.
 | TD6 | The Client select when a task has several clients or none (the drawer shows a single select) | P1 |
 | TD7 | Does a card click on the calendar or the Home "Due soon" panel open the same drawer? | P2 |
 | TD8 | Who counts as an "owner" (workspace OWNER role?). Default: the task creator or a workspace OWNER can edit. | P1 |
+
+### Docs
+| # | State | Pri |
+|---|---|---|
+| DC1 | The document view / editor (opened from a row) | P0 |
+| DC2 | The "+ New doc" flow: created as "Untitled"? Does it open the editor? | P0 |
+| DC3 | The "Upload document" flow: accepted types, progress, errors | P1 |
+| DC4 | Row hover state and whether rows show meta (updated time, author, client) | P2 |
+| DC5 | Doc kinds: written pages vs uploaded files ("image (1)"); are they shown differently? | P1 |
+| DC6 | List order (assumed: last updated first) and the empty state | P2 |
 
 ### Inbox
 | # | State | Pri |

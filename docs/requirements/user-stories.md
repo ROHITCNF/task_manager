@@ -195,6 +195,17 @@ Reference: `card_click_state_history_light.png`
 3. Events are listed oldest first, with avatar, "<actor> <action>" and a timestamp: created this task · added subtask “X” · changed the <field> from A to B. Unknown event types are not rendered (gap TD4).
 4. Matches the reference for the drawer region.
 
+## US-16 — Docs list
+
+**As** a user, **I want** to see the workspace's documents.
+Reference: `docs_light.png`
+
+1. `/docs` shows the title "Docs" and, on the right, "Upload document" (secondary) and "+ New doc" (primary). Both are **inert** until their flows are referenced (gaps DC2, DC3).
+2. Below, one row per document, showing only its title, in server order (last updated first), 40 px apart.
+3. The list pages via cursor when it is long.
+4. Rows are not clickable until the doc view is referenced (gap DC1).
+5. Matches reference.
+
 ## Deferred (need a reference first — see gaps.md)
 
-Docs (S2) · New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).
+New task form (S4) · Quick Capture draft review (S6) · Add client (S7) · Client detail (S8) · Workspace switcher (S9) · Change requests (S10) · Dark theme palette (T1) · Loading, error, and hover states (G1–G3).

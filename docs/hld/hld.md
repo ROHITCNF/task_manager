@@ -169,7 +169,7 @@ Zustand is the **state layer between the UI and the data layer**. It is the only
 | `quickCapture` | split drafts (no UI consumes them yet; gap S6) | no |
 | `ui` | theme preference (`system/light/dark`) | yes (localStorage) |
 
-The `inbox` store (filter, items, cursor, mark-all-read) was added with US-12. The `taskDetail` store (open task, history, save) was added with US-14/15. The `docs` store will be added when gap S2 is resolved.
+The `inbox` store (filter, items, cursor, mark-all-read) was added with US-12. The `taskDetail` store (open task, history, save) was added with US-14/15. The `docs` store (paged list) was added with US-16.
 
 ### 4.3 What stays out of Zustand
 
@@ -191,7 +191,7 @@ Router: React Router (ADR-0008). Two layouts: a **public** layout (no shell) and
 | `/tasks` | Tasks board | shell | auth | `taskboard_light.png` | Ready |
 | `/tasks/:taskId` | Task detail **drawer** over the board (nested route under `/tasks`) | shell | auth | `card_click_state*_light.png` | Ready (subtasks/comments blocked on TD1) |
 | `/calendar` | Calendar | shell | auth | `calendar_light.png` | Ready (after the C1 decision) |
-| `/docs` | Docs | shell | auth | — | **Blocked: gap S2** |
+| `/docs` | Docs list | shell | auth | `docs_light.png` | Ready (the doc view, create and upload flows are blocked on DC1–DC3) |
 | `/clients` | Clients | shell | auth | `clients_light.png` | Ready |
 | `/quick-capture` | Quick Capture | shell | auth | `quick-capture_light.png` | Ready (the draft step is blocked on S6) |
 | `/settings` | Workspace settings | shell | auth | `settings_light.png` | Ready |

@@ -38,3 +38,13 @@ export const CLIENTS = [
 ];
 
 export const LABELS = [];
+
+/** Docs of the DMT workspace (docs_light.png), most recently updated first. None are linked to a client. */
+export const DOCS = [
+  'Untitled', 'Untitled', 'Untitled', 'Untitled', 'Untitled', 'image (1)', 'Untitled', 'Test1', 'test5',
+].map((title, i) => ({
+  id: `doc_01J8Z${String(i + 1).padStart(3, '0')}000000000000000000`,
+  title,
+  clientId: null,
+  updatedAt: new Date(Date.UTC(2026, 8, 29, 12 - i, 0)).toISOString(),
+}));
